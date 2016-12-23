@@ -24,6 +24,7 @@ The example script below demonstrates how V-REPSim can be used to:
 - connect to a V-REP remote API server;
 - retrieve V-REP simulation time step;
 - start a V-REP simulation in synchronous operation mode;
+- create a representation of an object simulated in V-REP;
 - trigger a V-REP simulation step;
 - stop the V-REP simulation;
 - disconnect from the V-REP remote API server.
@@ -46,15 +47,22 @@ sim_dt = vrep_sim.get_sim_dt()
 # Start V-REP simulation in synchronous operation mode
 vrep_sim.start_sim(verbose=True)
 
+# Create representation of the floor and print its position
+floor = vrs.Object(vrep_sim, "ResizableFloor_5_25")
+print("Floor position: {}".format(floor.get_position()))
+
 # Perform operations not provided by V-REPSim by using V-REP remote API
 # directly, e.g.,
-ret_code, handle = vrep.simxGetObjectHandle(
-    vrep_sim.client_id, "ResizableFloor_5_25", vrep.simx_opmode_blocking)
+ret_code = vrep.simxAddStatusbarMessage(
+    vrep_sim.client_id, "Control from external Python program enabled.",
+    vrep.simx_opmode_oneshot)
+if ret_code not in (vrep.simx_return_ok, vrep.simx_return_novalue_flag):
+    print("Could not add a message to the status bar.")
 
 # Run a simulation for the specified time
 sim_time = 0.0
 while sim_time < 10.0:
-    # Perform some operations using V-REP remote API directly
+    # Perform some operations using V-REPSim or V-REP remote API directly
     # ...
 
     # Trigger next V-REP simulation step
