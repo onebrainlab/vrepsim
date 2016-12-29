@@ -21,6 +21,6 @@ __version__ = "0.1.0.dev1"
 __author__ = "Przemyslaw (Mack) Nowak"
 
 from .models import Model, PioneerBot
-from .objects import Object
+from .objects import Dummy, Object
 from .simulator import Simulator
 from . import models, objects, simulator

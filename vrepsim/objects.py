@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Interface to objects simulated in V-REP."""
+"""Interface to objects simulated in V-REP.
+
+Interface to objects simulated in V-REP provides individual interfaces to the
+following objects:
+
+- generic object;
+- dummy object.
+"""
 
 import vrep
 
@@ -7,7 +14,7 @@ from vrepsim.exceptions import SimulationError
 
 
 class Object(object):
-    """Interface to an object simulated in V-REP."""
+    """Interface to a generic object simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
         self._client_id = vrep_sim.client_id
@@ -57,3 +64,10 @@ class Object(object):
             raise SimulationError(
                 "Could not retrieve handle to {}.".format(self._name))
         return handle
+
+
+class Dummy(Object):
+    """Interface to dummy object simulated in V-REP."""
+
+    def __init__(self, vrep_sim, name):
+        super(Dummy, self).__init__(vrep_sim, name)
