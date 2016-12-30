@@ -23,4 +23,4 @@ __author__ = "Przemyslaw (Mack) Nowak"
 from .models import Model, PioneerBot
 from .objects import Dummy, Object
 from .simulator import Simulator
-from . import models, objects, simulator
+from . import nengo, models, objects, simulator
