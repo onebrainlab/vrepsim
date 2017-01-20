@@ -7,6 +7,8 @@ the following scene objects:
 - generic scene object;
 - dummy object;
 - proximity sensor.
+
+It also provides an interface to an array of generic sensors.
 """
 
 import vrep
@@ -96,3 +98,26 @@ class ProximitySensor(SceneObject):
         else:
             raise SimulationError("Could not retrieve data from "
                                   "{}.".format(self._name))
+
+
+class SensorArray(object):
+    """Interface to an array of generic sensors simulated in V-REP."""
+
+    def __init__(self):
+        self._sensors = []
+
+    def __contains__(self, item):
+        """Check if specific sensor belongs to the array."""
+        return item in self._sensors
+
+    def __getitem__(self, key):
+        """Retrieve specific sensor."""
+        return self._sensors[key]
+
+    def __iter__(self):
+        """Retrieve iterator over sensors."""
+        return iter(self._sensors)
+
+    def __len__(self):
+        """Retrieve number of sensors."""
+        return len(self._sensors)
