@@ -5,7 +5,8 @@ Interface to scene objects simulated in V-REP provides individual interfaces to
 the following scene objects:
 
 - generic scene object;
-- dummy object.
+- dummy object;
+- proximity sensor.
 """
 
 import vrep
@@ -71,3 +72,27 @@ class Dummy(SceneObject):
 
     def __init__(self, vrep_sim, name):
         super(Dummy, self).__init__(vrep_sim, name)
+
+
+class ProximitySensor(SceneObject):
+    """Interface to proximity sensor simulated in V-REP."""
+
+    def __init__(self, vrep_sim, name):
+        super(ProximitySensor, self).__init__(vrep_sim, name)
+
+    def get_inv_distance(self):
+        """Retrieve distance to the detected point inverted such that smaller
+        values correspond to further distances.
+        """
+        res, detect, point, _, _ = vrep.simxReadProximitySensor(
+            self._client_id, self._handle, vrep.simx_opmode_blocking)
+        if res == vrep.simx_return_ok:
+            if detect:
+                return 1.0 - point[2]  # distance inverted
+            else:
+                return 0.0
+        elif res == vrep.simx_return_novalue_flag:
+            return 0.0
+        else:
+            raise SimulationError("Could not retrieve data from "
+                                  "{}.".format(self._name))
