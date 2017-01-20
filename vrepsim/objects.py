@@ -8,7 +8,10 @@ the following scene objects:
 - dummy object;
 - proximity sensor.
 
-It also provides an interface to an array of generic sensors.
+It also provides interfaces to the following arrays of scene objects:
+
+- array of generic sensors;
+- array of proximity sensors.
 """
 
 import vrep
@@ -121,3 +124,19 @@ class SensorArray(object):
     def __len__(self):
         """Retrieve number of sensors."""
         return len(self._sensors)
+
+
+class ProximitySensorArray(SensorArray):
+    """Interface to an array of proximity sensors simulated in V-REP."""
+
+    def __init__(self, vrep_sim, sensor_names):
+        super(ProximitySensorArray, self).__init__()
+        if sensor_names:
+            self._sensors = [ProximitySensor(vrep_sim, name)
+                             for name in sensor_names]
+
+    def get_inv_distances(self):
+        """Retrieve distances to the detected points by all sensors inverted
+        such that smaller values correspond to further distances.
+        """
+        return [sensor.get_inv_distance() for sensor in self._sensors]
