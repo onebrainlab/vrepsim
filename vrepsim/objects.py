@@ -11,6 +11,7 @@ the following scene objects:
 
 It also provides interfaces to the following arrays of scene objects:
 
+- array of motors;
 - array of generic sensors;
 - array of proximity sensors.
 """
@@ -117,6 +118,37 @@ class ProximitySensor(SceneObject):
         else:
             raise SimulationError("Could not retrieve data from "
                                   "{}.".format(self._name))
+
+
+class MotorArray(object):
+    """Interface to an array of motors simulated in V-REP."""
+
+    def __init__(self, vrep_sim, motor_names):
+        if motor_names:
+            self._motors = [Motor(vrep_sim, name) for name in motor_names]
+        else:
+            self._motors = []
+
+    def __contains__(self, item):
+        """Check if specific motor belongs to the array."""
+        return item in self._motors
+
+    def __getitem__(self, key):
+        """Retrieve specific motor."""
+        return self._motors[key]
+
+    def __iter__(self):
+        """Retrieve iterator over motors."""
+        return iter(self._motors)
+
+    def __len__(self):
+        """Retrieve number of motors."""
+        return len(self._motors)
+
+    def set_velocities(self, motor_velocities):
+        """Set velocities for all motors."""
+        for m, motor in enumerate(self._motors):
+            motor.set_velocity(motor_velocities[m])
 
 
 class SensorArray(object):

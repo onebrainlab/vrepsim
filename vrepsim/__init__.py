@@ -21,7 +21,7 @@ __version__ = "0.1.0.dev1"
 __author__ = "Przemyslaw (Mack) Nowak"
 
 from .models import Model, PioneerBot
-from .objects import (Dummy, Motor, ProximitySensor, ProximitySensorArray,
-                      SceneObject, SensorArray)
+from .objects import (Dummy, Motor, MotorArray, ProximitySensor,
+                      ProximitySensorArray, SceneObject, SensorArray)
 from .simulator import Simulator
 from . import nengo, models, objects, simulator
