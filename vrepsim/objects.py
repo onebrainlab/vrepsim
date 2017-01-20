@@ -28,12 +28,12 @@ class SceneObject(object):
     @property
     def handle(self):
         """Object handle."""
-        return self._handle
+        return self._handle if self._handle != -1 else None
 
     @property
     def name(self):
         """Object name."""
-        return self._name
+        return self._name if self._name != "_Unnamed_" else None
 
     def get_orientation(self):
         """Retrieve object orientation specified as Euler angles about x, y,
