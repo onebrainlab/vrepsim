@@ -6,6 +6,7 @@ the following scene objects:
 
 - generic scene object;
 - dummy object;
+- motor (motorized joint);
 - proximity sensor.
 
 It also provides interfaces to the following arrays of scene objects:
@@ -77,6 +78,21 @@ class Dummy(SceneObject):
 
     def __init__(self, vrep_sim, name):
         super(Dummy, self).__init__(vrep_sim, name)
+
+
+class Motor(SceneObject):
+    """Interface to motor (motorized joint) simulated in V-REP."""
+
+    def __init__(self, vrep_sim, name):
+        super(Motor, self).__init__(vrep_sim, name)
+
+    def set_velocity(self, velocity):
+        """Set motor velocity."""
+        res = vrep.simxSetJointTargetVelocity(
+            self._client_id, self._handle, velocity, vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError("Could not update {} "
+                                  "velocity.".format(self._name))
 
 
 class ProximitySensor(SceneObject):
