@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Interface to objects simulated in V-REP.
+"""Interface to scene objects simulated in V-REP.
 
-Interface to objects simulated in V-REP provides individual interfaces to the
-following objects:
+Interface to scene objects simulated in V-REP provides individual interfaces to
+the following scene objects:
 
-- generic object;
+- generic scene object;
 - dummy object.
 """
 
@@ -13,8 +13,8 @@ import vrep
 from vrepsim.exceptions import SimulationError
 
 
-class Object(object):
-    """Interface to a generic object simulated in V-REP."""
+class SceneObject(object):
+    """Interface to a generic scene object simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
         self._client_id = vrep_sim.client_id
@@ -66,7 +66,7 @@ class Object(object):
         return handle
 
 
-class Dummy(Object):
+class Dummy(SceneObject):
     """Interface to dummy object simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):

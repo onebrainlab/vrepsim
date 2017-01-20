@@ -6,7 +6,7 @@ following functionality:
 
 - adding slots for input data to V-REP;
 - adding slots for output data from V-REP;
-- updating states of objects simulated in V-REP.
+- updating states of scene objects simulated in V-REP.
 """
 
 class NengoComm(object):
@@ -23,7 +23,7 @@ class NengoComm(object):
         self._nengo_sim_steps_count = 0
 
     def __call__(self, t, x):
-        """Update states of objects simulated in V-REP."""
+        """Update states of scene objects simulated in V-REP."""
         # Determine if state update is necessary and if so, update the states
         self._nengo_sim_steps_count += 1
         if self._nengo_sim_steps_count == self._n_nengo_sim_steps:
@@ -31,13 +31,13 @@ class NengoComm(object):
             # time step
             self._nengo_sim_steps_count = 0
 
-            # Send input data to simulated objects
+            # Send input data to simulated scene objects
             start_dim = 0
             for func, dim in self._input_handlers:
                 func(x[start_dim:start_dim+dim])
                 start_dim += dim
 
-            # Retrieve output data from simulated objects
+            # Retrieve output data from simulated scene objects
             output = []
             for func in self._output_handlers:
                 res = func()

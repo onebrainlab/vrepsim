@@ -11,10 +11,10 @@ following models:
 import vrep
 
 from vrepsim.exceptions import SimulationError
-from vrepsim.objects import Object
+from vrepsim.objects import SceneObject
 
 
-class Model(Object):
+class Model(SceneObject):
     """Interface to a generic model simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
