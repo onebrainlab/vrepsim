@@ -20,16 +20,16 @@ class NengoComm(object):
         self._size_out = 0
         self._output = []
         self._n_nengo_sim_steps = int(n_nengo_sim_steps)
-        self._nengo_sim_steps_count = 0
+        self._nengo_sim_steps_count = 1
 
     def __call__(self, t, x):
         """Update states of scene objects simulated in V-REP."""
         # Determine if state update is necessary and if so, update the states
-        self._nengo_sim_steps_count += 1
-        if self._nengo_sim_steps_count == self._n_nengo_sim_steps:
+        self._nengo_sim_steps_count -= 1
+        if not self._nengo_sim_steps_count:
             # Reset counter of Nengo simulation time steps per V-REP simulation
             # time step
-            self._nengo_sim_steps_count = 0
+            self._nengo_sim_steps_count = self._n_nengo_sim_steps
 
             # Send input data to simulated scene objects
             start_dim = 0
