@@ -43,13 +43,12 @@ class SceneObject(object):
         """Object name."""
         return self._name if self._name != "_Unnamed_" else None
 
-    def get_orientation(self):
+    def get_orientation(self, relative=-1):
         """Retrieve object orientation specified as Euler angles about x, y,
-        and z axes of the absolute reference frame, each angle between -pi
-        and pi.
+        and z axes of the reference frame, each angle between -pi and pi.
         """
         res, orientation = vrep.simxGetObjectOrientation(
-            self._client_id, self._handle, -1, vrep.simx_opmode_blocking)
+            self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise SimulationError(
                 "Could not retrieve orientation of {}.".format(self._name))
