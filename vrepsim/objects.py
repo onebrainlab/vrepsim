@@ -55,10 +55,10 @@ class SceneObject(object):
                 "Could not retrieve orientation of {}.".format(self._name))
         return orientation
 
-    def get_position(self):
+    def get_position(self, relative=-1):
         """Retrieve object position."""
         res, position = vrep.simxGetObjectPosition(
-            self._client_id, self._handle, -1, vrep.simx_opmode_blocking)
+            self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise SimulationError(
                 "Could not retrieve position of {}.".format(self._name))
