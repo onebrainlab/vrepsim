@@ -3,7 +3,7 @@
 
 Exceptions include:
 
-- ServerError - raised during connecting to V-REP remote API server;
+- ServerError - raised during communicating with V-REP remote API server;
 - SimulationError - raised during running a simulation.
 """
 
@@ -14,7 +14,7 @@ class VREPSimError(Exception):
 
 
 class ServerError(VREPSimError, RuntimeError):
-    """Error during connecting to V-REP remote API server."""
+    """Error during communicating with V-REP remote API server."""
     pass
 
 

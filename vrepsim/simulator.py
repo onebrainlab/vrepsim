@@ -5,6 +5,7 @@ Interface to V-REP remote API server provides the following functionality:
 
 - connecting to a V-REP remote API server;
 - disconnecting from a V-REP remote API server;
+- retrieving V-REP version;
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
 - triggering a V-REP simulation step;
@@ -90,6 +91,17 @@ class Simulator(object):
         return round(sim_dt, 4)  # V-REP simulation time step may be slightly
                                  # imprecise (around the 10th digit after the
                                  # decimal point)
+
+    def get_version(self):
+        """Retrieve V-REP version."""
+        res, version = vrep.simxGetIntegerParameter(
+            self._client_id, vrep.sim_intparam_program_version,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve V-REP version.")
+        return "{x}.{y}.{z}".format(x=version // 10000,
+                                    y=(version // 100) % 100,
+                                    z=version % 100)
 
     def start_sim(self, verbose=False):
         """Start V-REP simulation in synchronous operation mode."""
