@@ -6,6 +6,7 @@ Interface to V-REP remote API server provides the following functionality:
 - connecting to a V-REP remote API server;
 - disconnecting from a V-REP remote API server;
 - retrieving V-REP version;
+- retrieving scene path;
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
 - triggering a V-REP simulation step;
@@ -79,6 +80,15 @@ class Simulator(object):
             if verbose:
                 print("Could not disconnect from V-REP remote API server: "
                       "not connected.")
+
+    def get_scene_path(self):
+        """Retrieve scene path."""
+        res, scene_path = vrep.simxGetStringParameter(
+            self._client_id, vrep.sim_stringparam_scene_path_and_name,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError("Could not retrieve scene path.")
+        return scene_path
 
     def get_sim_dt(self):
         """Retrieve V-REP simulation time step."""
