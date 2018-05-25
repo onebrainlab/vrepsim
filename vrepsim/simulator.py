@@ -6,6 +6,7 @@ Interface to V-REP remote API server provides the following functionality:
 - connecting to a V-REP remote API server;
 - disconnecting from a V-REP remote API server;
 - retrieving V-REP version;
+- retrieving dynamics engine name;
 - retrieving scene path;
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
@@ -80,6 +81,16 @@ class Simulator(object):
             if verbose:
                 print("Could not disconnect from V-REP remote API server: "
                       "not connected.")
+
+    def get_dyn_eng_name(self):
+        """Retrieve dynamics engine name."""
+        dyn_engs_names = {0: "Bullet", 1: "ODE", 2: "Vortex", 3: "Newton"}
+        res, dyn_eng_id = vrep.simxGetIntegerParameter(
+            self._client_id, vrep.sim_intparam_dynamic_engine,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve dynamics engine name.")
+        return dyn_engs_names[dyn_eng_id]
 
     def get_scene_path(self):
         """Retrieve scene path."""

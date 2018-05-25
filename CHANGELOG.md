@@ -4,6 +4,10 @@ Changelog
 0.2.0 - Unreleased
 ------------------
 
+### Added
+
+- Added retrieving dynamics engine name via interface to V-REP remote API
+  server.
 
 0.1.0 - 2017-05-05
 ------------------
