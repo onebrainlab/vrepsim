@@ -8,6 +8,8 @@ Changelog
 
 - Added retrieving dynamics engine name via interface to V-REP remote API
   server.
+- Added retrieving dynamics engine time step via interface to V-REP remote API
+  server.
 
 0.1.0 - 2017-05-05
 ------------------

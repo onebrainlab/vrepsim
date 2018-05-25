@@ -11,7 +11,8 @@ Interface to V-REP remote API server provides the following functionality:
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
 - triggering a V-REP simulation step;
-- retrieving V-REP simulation time step.
+- retrieving V-REP simulation time step;
+- retrieving dynamics engine time step.
 """
 
 import time
@@ -81,6 +82,21 @@ class Simulator(object):
             if verbose:
                 print("Could not disconnect from V-REP remote API server: "
                       "not connected.")
+
+    def get_dyn_eng_dt(self):
+        """Retrieve dynamics engine time step."""
+        vrep.sim_floatparam_dynamic_step_size = 3  # constant missing in Python
+                                                   # binding to V-REP remote
+                                                   # API
+        res, dyn_eng_dt = vrep.simxGetFloatingParameter(
+            self._client_id, vrep.sim_floatparam_dynamic_step_size,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError(
+                "Could not retrieve dynamics engine time step.")
+        return round(dyn_eng_dt, 4)  # dynamics engine time step may be
+                                     # slightly imprecise (around the 10th
+                                     # digit after the decimal point)
 
     def get_dyn_eng_name(self):
         """Retrieve dynamics engine name."""
