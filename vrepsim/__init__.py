@@ -17,7 +17,7 @@ which V-REP is installed):
   V-REP_DIR/programming/remoteApiBindings/lib/lib/[32Bit | 64Bit]/).
 """
 
-__version__ = '0.2.0'
+__version__ = '0.3.0.dev1'
 __author__ = "Przemyslaw (Mack) Nowak"
 
 from .collections import Collection
