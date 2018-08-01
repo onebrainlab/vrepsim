@@ -4,6 +4,10 @@ Changelog
 0.3.0 - Unreleased
 ------------------
 
+### Added
+
+- Added interface to vision sensor simulated in V-REP.
+
 0.2.0 - 2018-06-11
 ------------------
 

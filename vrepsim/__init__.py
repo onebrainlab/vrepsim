@@ -23,6 +23,7 @@ __author__ = "Przemyslaw (Mack) Nowak"
 from .collections import Collection
 from .models import Model, PioneerBot
 from .objects import (Dummy, Motor, MotorArray, ProximitySensor,
-                      ProximitySensorArray, SceneObject, SensorArray)
+                      ProximitySensorArray, SceneObject, SensorArray,
+                      VisionSensor)
 from .simulator import Simulator
 from . import collections, models, nengo, objects, simulator

@@ -7,7 +7,8 @@ the following scene objects:
 - generic scene object;
 - dummy object;
 - motor (motorized joint);
-- proximity sensor.
+- proximity sensor;
+- vision sensor.
 
 It also provides interfaces to the following arrays of scene objects:
 
@@ -117,6 +118,38 @@ class ProximitySensor(SceneObject):
         else:
             raise SimulationError("Could not retrieve data from "
                                   "{}.".format(self._name))
+
+
+class VisionSensor(SceneObject):
+    """Interface to vision sensor simulated in V-REP."""
+
+    def __init__(self, vrep_sim, name):
+        super(VisionSensor, self).__init__(vrep_sim, name)
+
+    def get_image(self, grayscale=False):
+        """Retrieve image."""
+        # Retrieve image from the vision sensor simulated in V-REP
+        res, resolution, image = vrep.simxGetVisionSensorImage(
+            self._client_id, self._handle, grayscale,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError("Could not retrieve image from "
+                                  "{}.".format(self._name))
+
+        # Convert misrepresented pixel values due to the underlying unsigned
+        # type
+        image = [val if val >= 0 else val + 256 for val in image]
+
+        # If necessary, arrange RGB triplets
+        width, height = resolution
+        n_pixels = width * height
+        if not grayscale:
+            image = [image[p:p+3] for p in range(0, 3*n_pixels, 3)]
+
+        # Arrange pixels in rows, reversing from bottom up to top down order
+        image = [image[p:p+width] for p in reversed(range(0, n_pixels, width))]
+
+        return image
 
 
 class MotorArray(object):
