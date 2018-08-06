@@ -7,6 +7,8 @@ Changelog
 ### Added
 
 - Added interface to vision sensor simulated in V-REP.
+- Added retrieving whether V-REP simulation is started via interface to V-REP
+  remote API server.
 
 0.2.0 - 2018-06-11
 ------------------

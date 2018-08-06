@@ -10,6 +10,7 @@ Interface to V-REP remote API server provides the following functionality:
 - retrieving scene path;
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
+- retrieving whether V-REP simulation is started;
 - triggering a V-REP simulation step;
 - retrieving V-REP simulation time step;
 - retrieving dynamics engine time step.
@@ -139,6 +140,42 @@ class Simulator(object):
         return "{x}.{y}.{z}".format(x=version // 10000,
                                     y=(version // 100) % 100,
                                     z=version % 100)
+
+    def is_sim_started(self):
+        """Retrieve whether V-REP simulation is started.
+
+        The return value may be inaccurate if the function is called
+        immediately after starting or stopping a simulation; in such a case,
+        introducing a short delay before calling it should help.
+        """
+        SIM_NOT_STOPPED = 0x01
+
+        # Retrieve whether V-REP is currently waiting for a trigger signal;
+        # the result by itself, however, is not conclusive as to whether a
+        # simulation is started or not (not waiting for a trigger signal does
+        # not necessarily mean that a simulation is not started because there
+        # may be unprocessed trigger signals during a simulation, in
+        # which case V-REP will be advancing the simulation without reporting
+        # that it needs to wait for a trigger signal); this operation is
+        # performed only to receive a new message from the V-REP remote API
+        # server so that the next operation could operate on up-to-date data
+        res, _ = vrep.simxGetBooleanParameter(
+            self._client_id, vrep.sim_boolparam_waiting_for_trigger,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve whether V-REP simulation is "
+                              "started.")
+
+        # Retrieve the server state from the last message received from the
+        # V-REP remote API server
+        res, server_state = vrep.simxGetInMessageInfo(
+            self._client_id, vrep.simx_headeroffset_server_state)
+        if res == -1:
+            raise ServerError("Could not retrieve whether V-REP simulation is "
+                              "started.")
+
+        # Determine whether V-REP simulation is started
+        return server_state & SIM_NOT_STOPPED
 
     def start_sim(self, verbose=False):
         """Start V-REP simulation in synchronous operation mode."""
