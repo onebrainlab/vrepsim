@@ -20,7 +20,7 @@ import time
 
 import vrep
 
-from vrepsim.exceptions import ServerError, SimulationError
+from vrepsim.exceptions import ServerError
 
 
 class Simulator(object):
@@ -93,8 +93,7 @@ class Simulator(object):
             self._client_id, vrep.sim_floatparam_dynamic_step_size,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
-                "Could not retrieve dynamics engine time step.")
+            raise ServerError("Could not retrieve dynamics engine time step.")
         return round(dyn_eng_dt, 4)  # dynamics engine time step may be
                                      # slightly imprecise (around the 10th
                                      # digit after the decimal point)
@@ -115,7 +114,7 @@ class Simulator(object):
             self._client_id, vrep.sim_stringparam_scene_path_and_name,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError("Could not retrieve scene path.")
+            raise ServerError("Could not retrieve scene path.")
         return scene_path
 
     def get_sim_dt(self):
@@ -124,8 +123,7 @@ class Simulator(object):
             self._client_id, vrep.sim_floatparam_simulation_time_step,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
-                "Could not retrieve V-REP simulation time step.")
+            raise ServerError("Could not retrieve V-REP simulation time step.")
         return round(sim_dt, 4)  # V-REP simulation time step may be slightly
                                  # imprecise (around the 10th digit after the
                                  # decimal point)
@@ -182,12 +180,12 @@ class Simulator(object):
         # Start V-REP simulation in synchronous operation mode
         res = vrep.simxSynchronous(self._client_id, True)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not enable V-REP synchronous operation mode.")
         res = vrep.simxStartSimulation(self._client_id,
                                        vrep.simx_opmode_blocking)
         if res not in (vrep.simx_return_ok, vrep.simx_return_novalue_flag):
-            raise SimulationError("Could not start V-REP simulation.")
+            raise ServerError("Could not start V-REP simulation.")
 
         # If necessary, display confirmation message
         if verbose:
@@ -200,7 +198,7 @@ class Simulator(object):
         res = vrep.simxStopSimulation(self._client_id,
                                       vrep.simx_opmode_blocking)
         if res not in (vrep.simx_return_ok, vrep.simx_return_novalue_flag):
-            raise SimulationError("Could not stop V-REP simulation.")
+            raise ServerError("Could not stop V-REP simulation.")
 
         # If necessary, display confirmation message
         if verbose:
@@ -211,4 +209,4 @@ class Simulator(object):
         """Trigger V-REP simulation step."""
         res = vrep.simxSynchronousTrigger(self._client_id)
         if res != vrep.simx_return_ok:
-            raise SimulationError("Could not trigger V-REP simulation step.")
+            raise ServerError("Could not trigger V-REP simulation step.")

@@ -7,7 +7,7 @@ collection of scene objects simulated in V-REP.
 
 import vrep
 
-from vrepsim.exceptions import SimulationError
+from vrepsim.exceptions import ServerError
 
 
 class Collection(object):
@@ -33,7 +33,7 @@ class Collection(object):
         res, _, _, _, names = vrep.simxGetObjectGroupData(
             self._client_id, self._handle, 0, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve names of {}.".format(self._name))
         return names
 
@@ -45,7 +45,7 @@ class Collection(object):
         res, _, _, orientations, _ = vrep.simxGetObjectGroupData(
             self._client_id, self._handle, 5, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve orientations of {}.".format(self._name))
         return [orientations[o*3:(o+1)*3]
                 for o in range(len(orientations) / 3)]
@@ -55,7 +55,7 @@ class Collection(object):
         res, _, _, positions, _ = vrep.simxGetObjectGroupData(
             self._client_id, self._handle, 3, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve positions of {}.".format(self._name))
         return [positions[p*3:(p+1)*3] for p in range(len(positions) / 3)]
 
@@ -64,6 +64,6 @@ class Collection(object):
         res, handle = vrep.simxGetCollectionHandle(self._client_id, self._name,
                                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve handle to {}.".format(self._name))
         return handle

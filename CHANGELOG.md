@@ -14,6 +14,10 @@ Changelog
 - Added setting object orientation via interface to a generic scene object
   simulated in V-REP.
 
+### Changed
+
+- Changed semantics of V-REPSim exceptions.
+
 0.2.0 - 2018-06-11
 ------------------
 

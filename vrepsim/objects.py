@@ -19,7 +19,7 @@ It also provides interfaces to the following arrays of scene objects:
 
 import vrep
 
-from vrepsim.exceptions import SimulationError
+from vrepsim.exceptions import ServerError, SimulationError
 
 
 class SceneObject(object):
@@ -52,7 +52,7 @@ class SceneObject(object):
         res, orientation = vrep.simxGetObjectOrientation(
             self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve orientation of {}.".format(self._name))
         return orientation
 
@@ -68,7 +68,7 @@ class SceneObject(object):
             self._client_id, self._handle, relative, orientation,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not set orientation of {}.".format(self._name))
 
     def get_position(self, relative=-1):
@@ -76,7 +76,7 @@ class SceneObject(object):
         res, position = vrep.simxGetObjectPosition(
             self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve position of {}.".format(self._name))
         return position
 
@@ -90,7 +90,7 @@ class SceneObject(object):
             self._client_id, self._handle, relative, position,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not set position of {}.".format(self._name))
 
     def _get_handle(self):
@@ -98,7 +98,7 @@ class SceneObject(object):
         res, handle = vrep.simxGetObjectHandle(self._client_id, self._name,
                                                vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError(
+            raise ServerError(
                 "Could not retrieve handle to {}.".format(self._name))
         return handle
 
@@ -121,8 +121,7 @@ class Motor(SceneObject):
         res = vrep.simxSetJointTargetVelocity(
             self._client_id, self._handle, velocity, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError("Could not set {} "
-                                  "velocity.".format(self._name))
+            raise ServerError("Could not set {} velocity.".format(self._name))
 
 
 class ProximitySensor(SceneObject):
@@ -145,8 +144,8 @@ class ProximitySensor(SceneObject):
         elif res == vrep.simx_return_novalue_flag:
             return 0.0
         else:
-            raise SimulationError("Could not retrieve data from "
-                                  "{}.".format(self._name))
+            raise ServerError(
+                "Could not retrieve data from {}.".format(self._name))
 
 
 class VisionSensor(SceneObject):
@@ -162,8 +161,8 @@ class VisionSensor(SceneObject):
             self._client_id, self._handle, grayscale,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError("Could not retrieve image from "
-                                  "{}.".format(self._name))
+            raise ServerError(
+                "Could not retrieve image from {}.".format(self._name))
 
         # Convert misrepresented pixel values due to the underlying unsigned
         # type
