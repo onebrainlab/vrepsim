@@ -26,7 +26,8 @@ class SceneObject(object):
     """Interface to a generic scene object simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
-        self._client_id = vrep_sim.client_id
+        self._vrep_sim = vrep_sim
+        self._client_id = self._vrep_sim.client_id
         if name:
             self._name = name
             self._handle = self._get_handle()
@@ -63,6 +64,19 @@ class SceneObject(object):
             raise SimulationError(
                 "Could not retrieve position of {}.".format(self._name))
         return position
+
+    def set_position(self, position, relative=-1, allow_in_sim=False):
+        """Set object position."""
+        if not allow_in_sim and self._vrep_sim.is_sim_started():
+            raise SimulationError(
+                "Could not set position of {}: setting position not allowed "
+                "during simulation.".format(self._name))
+        res = vrep.simxSetObjectPosition(
+            self._client_id, self._handle, relative, position,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError(
+                "Could not set position of {}.".format(self._name))
 
     def _get_handle(self):
         """Retrieve object handle."""

@@ -9,6 +9,8 @@ Changelog
 - Added interface to vision sensor simulated in V-REP.
 - Added retrieving whether V-REP simulation is started via interface to V-REP
   remote API server.
+- Added setting object position via interface to a generic scene object
+  simulated in V-REP.
 
 0.2.0 - 2018-06-11
 ------------------
