@@ -11,6 +11,8 @@ Changelog
   remote API server.
 - Added setting object position via interface to a generic scene object
   simulated in V-REP.
+- Added setting object orientation via interface to a generic scene object
+  simulated in V-REP.
 
 0.2.0 - 2018-06-11
 ------------------

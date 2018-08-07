@@ -56,6 +56,21 @@ class SceneObject(object):
                 "Could not retrieve orientation of {}.".format(self._name))
         return orientation
 
+    def set_orientation(self, orientation, relative=-1, allow_in_sim=False):
+        """Set object orientation specified as Euler angles about x, y, and z
+        axes of the reference frame, each angle between -pi and pi.
+        """
+        if not allow_in_sim and self._vrep_sim.is_sim_started():
+            raise SimulationError(
+                "Could not set orientation of {}: setting orientation not "
+                "allowed during simulation.".format(self._name))
+        res = vrep.simxSetObjectOrientation(
+            self._client_id, self._handle, relative, orientation,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise SimulationError(
+                "Could not set orientation of {}.".format(self._name))
+
     def get_position(self, relative=-1):
         """Retrieve object position."""
         res, position = vrep.simxGetObjectPosition(
