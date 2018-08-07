@@ -121,7 +121,7 @@ class Motor(SceneObject):
         res = vrep.simxSetJointTargetVelocity(
             self._client_id, self._handle, velocity, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
-            raise SimulationError("Could not update {} "
+            raise SimulationError("Could not set {} "
                                   "velocity.".format(self._name))
 
 
