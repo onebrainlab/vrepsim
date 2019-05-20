@@ -102,6 +102,15 @@ class SceneObject(object):
             raise ServerError(
                 "Could not set position of {}.".format(self._name))
 
+    def remove(self):
+        """Remove object from scene."""
+        res = vrep.simxRemoveObject(self._client_id, self._handle,
+                                    vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not remove {}.".format(self._name))
+        self._name = "_Removed_"
+        self._handle = -1
+
     def _get_handle(self):
         """Retrieve object handle."""
         res, handle = vrep.simxGetObjectHandle(self._client_id, self._name,
