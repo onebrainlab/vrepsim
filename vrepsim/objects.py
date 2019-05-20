@@ -45,6 +45,33 @@ class SceneObject(object):
         """Object name."""
         return self._name if self._name != "_Unnamed_" else None
 
+    def call_script_func(self, funcname, script_type='customization',
+                         args_int=[], args_float=[], args_string=[],
+                         args_buf=bytearray()):
+        """Call function from associated script."""
+        ASSOC_SCRIPT_TYPES = {
+            'child': vrep.sim_scripttype_childscript,
+            'customization': vrep.sim_scripttype_customizationscript
+            }
+
+        # Validate script type
+        try:
+            vrep_script_type = ASSOC_SCRIPT_TYPES[script_type]
+        except KeyError:
+            raise ValueError("Script type is not supported.")
+
+        # Call function from the script
+        res, rets_int, rets_float, rets_string, rets_buf = \
+            vrep.simxCallScriptFunction(
+                self._client_id, self._name, vrep_script_type, funcname,
+                args_int, args_float, args_string, args_buf,
+                vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError(
+                "Could not call function {0} from {1} script associated with "
+                "{2}.".format(funcname, script_type, self._name))
+        return rets_int, rets_float, rets_string, rets_buf
+
     def copy_paste(self):
         """Copy and paste object."""
         res, handles = vrep.simxCopyPasteObjects(

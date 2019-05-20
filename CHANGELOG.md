@@ -19,6 +19,8 @@ Changelog
   simulated in V-REP.
 - Added removing model from scene via interface to a generic model simulated in
   V-REP.
+- Added calling function from associated script via interface to a generic
+  scene object simulated in V-REP.
 
 ### Changed
 
