@@ -13,6 +13,8 @@ Changelog
   simulated in V-REP.
 - Added setting object orientation via interface to a generic scene object
   simulated in V-REP.
+- Added copying and pasting object via interface to a generic scene object
+  simulated in V-REP.
 
 ### Changed
 
