@@ -8,6 +8,9 @@ following models:
 - Pioneer P3-DX robot.
 """
 
+import vrep
+
+from vrepsim.exceptions import ServerError
 from vrepsim.objects import MotorArray, ProximitySensorArray, SceneObject
 
 
@@ -16,6 +19,15 @@ class Model(SceneObject):
 
     def __init__(self, vrep_sim, name):
         super(Model, self).__init__(vrep_sim, name)
+
+    def remove(self):
+        """Remove model from scene."""
+        res = vrep.simxRemoveModel(self._client_id, self._handle,
+                                   vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not remove {}.".format(self._name))
+        self._name = "_Removed_"
+        self._handle = -1
 
 
 class PioneerBot(Model):
