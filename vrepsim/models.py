@@ -20,6 +20,33 @@ class Model(SceneObject):
     def __init__(self, vrep_sim, name):
         super(Model, self).__init__(vrep_sim, name)
 
+    def get_bbox_limits(self):
+        """Retrieve limits of model bounding box."""
+        BBOX_LIMITS = (
+            ('x_min', vrep.sim_objfloatparam_modelbbox_min_x),
+            ('x_max', vrep.sim_objfloatparam_modelbbox_max_x),
+            ('y_min', vrep.sim_objfloatparam_modelbbox_min_y),
+            ('y_max', vrep.sim_objfloatparam_modelbbox_max_y),
+            ('z_min', vrep.sim_objfloatparam_modelbbox_min_z),
+            ('z_max', vrep.sim_objfloatparam_modelbbox_max_z)
+            )
+
+        bbox_limits = []
+        for limit in BBOX_LIMITS:
+            res, lim = vrep.simxGetObjectFloatParameter(
+                self._client_id, self._handle, limit[1],
+                vrep.simx_opmode_blocking)
+            if res != vrep.simx_return_ok:
+                raise ServerError("Could not retrieve {0} limit of {1} "
+                                  "bounding box.".format(limit[0], self._name))
+            bbox_limits.append(round(lim, 4))  # limit may be slightly
+                                               # imprecise (around the 6th
+                                               # digit after the decimal point)
+        bbox_limits = [[min_lim, max_lim]
+                       for min_lim, max_lim
+                       in zip(bbox_limits[::2], bbox_limits[1::2])]
+        return bbox_limits
+
     def remove(self):
         """Remove model from scene."""
         res = vrep.simxRemoveModel(self._client_id, self._handle,
