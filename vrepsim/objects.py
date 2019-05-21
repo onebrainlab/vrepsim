@@ -81,6 +81,33 @@ class SceneObject(object):
                 "Could not copy and paste {}.".format(self._name))
         return handles[0]
 
+    def get_bbox_limits(self):
+        """Retrieve limits of object bounding box."""
+        BBOX_LIMITS = (
+            ('x_min', vrep.sim_objfloatparam_objbbox_min_x),
+            ('x_max', vrep.sim_objfloatparam_objbbox_max_x),
+            ('y_min', vrep.sim_objfloatparam_objbbox_min_y),
+            ('y_max', vrep.sim_objfloatparam_objbbox_max_y),
+            ('z_min', vrep.sim_objfloatparam_objbbox_min_z),
+            ('z_max', vrep.sim_objfloatparam_objbbox_max_z)
+            )
+
+        bbox_limits = []
+        for limit in BBOX_LIMITS:
+            res, lim = vrep.simxGetObjectFloatParameter(
+                self._client_id, self._handle, limit[1],
+                vrep.simx_opmode_blocking)
+            if res != vrep.simx_return_ok:
+                raise ServerError("Could not retrieve {0} limit of {1} "
+                                  "bounding box.".format(limit[0], self._name))
+            bbox_limits.append(round(lim, 4))  # limit may be slightly
+                                               # imprecise (around the 6th
+                                               # digit after the decimal point)
+        bbox_limits = [[min_lim, max_lim]
+                       for min_lim, max_lim
+                       in zip(bbox_limits[::2], bbox_limits[1::2])]
+        return bbox_limits
+
     def get_orientation(self, relative=-1):
         """Retrieve object orientation specified as Euler angles about x, y,
         and z axes of the reference frame, each angle between -pi and pi.
