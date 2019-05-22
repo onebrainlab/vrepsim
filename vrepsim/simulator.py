@@ -20,6 +20,7 @@ import time
 
 import vrep
 
+from vrepsim.constants import VREP_FLOAT_PREC
 from vrepsim.exceptions import ServerError
 
 
@@ -84,7 +85,7 @@ class Simulator(object):
                 print("Could not disconnect from V-REP remote API server: "
                       "not connected.")
 
-    def get_dyn_eng_dt(self):
+    def get_dyn_eng_dt(self, prec=VREP_FLOAT_PREC):
         """Retrieve dynamics engine time step."""
         vrep.sim_floatparam_dynamic_step_size = 3  # constant missing in Python
                                                    # binding to V-REP remote
@@ -94,9 +95,12 @@ class Simulator(object):
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not retrieve dynamics engine time step.")
-        return round(dyn_eng_dt, 4)  # dynamics engine time step may be
-                                     # slightly imprecise (around the 10th
-                                     # digit after the decimal point)
+        if prec is not None:
+            dyn_eng_dt = round(dyn_eng_dt, prec)  # dynamics engine time step
+                                                  # may be slightly imprecise
+                                                  # (about the 10th digit after
+                                                  # the decimal point)
+        return dyn_eng_dt
 
     def get_dyn_eng_name(self):
         """Retrieve dynamics engine name."""
@@ -117,16 +121,18 @@ class Simulator(object):
             raise ServerError("Could not retrieve scene path.")
         return scene_path
 
-    def get_sim_dt(self):
+    def get_sim_dt(self, prec=VREP_FLOAT_PREC):
         """Retrieve V-REP simulation time step."""
         res, sim_dt = vrep.simxGetFloatingParameter(
             self._client_id, vrep.sim_floatparam_simulation_time_step,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not retrieve V-REP simulation time step.")
-        return round(sim_dt, 4)  # V-REP simulation time step may be slightly
-                                 # imprecise (around the 10th digit after the
-                                 # decimal point)
+        if prec is not None:
+            sim_dt = round(sim_dt, prec)  # V-REP simulation time step may be
+                                          # slightly imprecise (about the 10th
+                                          # digit after the decimal point)
+        return sim_dt
 
     def get_version(self):
         """Retrieve V-REP version."""

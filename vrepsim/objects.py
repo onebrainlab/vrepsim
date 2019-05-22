@@ -19,6 +19,7 @@ It also provides interfaces to the following arrays of scene objects:
 
 import vrep
 
+from vrepsim.constants import VREP_FLOAT_PREC
 from vrepsim.exceptions import ServerError, SimulationError
 
 
@@ -81,7 +82,7 @@ class SceneObject(object):
                 "Could not copy and paste {}.".format(self._name))
         return handles[0]
 
-    def get_bbox_limits(self):
+    def get_bbox_limits(self, prec=VREP_FLOAT_PREC):
         """Retrieve limits of object bounding box."""
         BBOX_LIMITS = (
             ('x_min', vrep.sim_objfloatparam_objbbox_min_x),
@@ -100,9 +101,11 @@ class SceneObject(object):
             if res != vrep.simx_return_ok:
                 raise ServerError("Could not retrieve {0} limit of {1} "
                                   "bounding box.".format(limit[0], self._name))
-            bbox_limits.append(round(lim, 4))  # limit may be slightly
-                                               # imprecise (around the 6th
-                                               # digit after the decimal point)
+            if prec is not None:
+                lim = round(lim, prec)  # limit may be slightly imprecise
+                                        # (about the 6th digit after the
+                                        # decimal point)
+            bbox_limits.append(lim)
         bbox_limits = [[min_lim, max_lim]
                        for min_lim, max_lim
                        in zip(bbox_limits[::2], bbox_limits[1::2])]
