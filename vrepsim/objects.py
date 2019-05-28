@@ -173,23 +173,26 @@ class SceneObject(object):
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set parent of {}.".format(self._name))
 
-    def get_position(self, relative=-1):
+    def get_position(self, relative=None):
         """Retrieve object position."""
+        relative_handle = SceneObject.get_handle(relative, "relative")
         res, position = vrep.simxGetObjectPosition(
-            self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
+            self._client_id, self._handle, relative_handle,
+            vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve position of {}.".format(self._name))
         return position
 
-    def set_position(self, position, relative=-1, allow_in_sim=False):
+    def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""
         if not allow_in_sim and self._vrep_sim.is_sim_started():
             raise SimulationError(
                 "Could not set position of {}: setting position not allowed "
                 "during simulation.".format(self._name))
+        relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectPosition(
-            self._client_id, self._handle, relative, position,
+            self._client_id, self._handle, relative_handle, position,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
