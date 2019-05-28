@@ -46,6 +46,21 @@ class SceneObject(object):
         """Object name."""
         return self._name if self._name != "_Unnamed_" else None
 
+    @staticmethod
+    def get_handle(scene_obj, name):
+        """Retrieve object handle."""
+        if scene_obj is None:
+            return -1
+        elif isinstance(scene_obj, int):
+            return scene_obj
+        elif isinstance(scene_obj, SceneObject):
+            handle = scene_obj.handle
+            if handle is None:
+                raise ValueError("Handle of {} is invalid.".format(name))
+            return handle
+        else:
+            raise TypeError("Type of {} is not supported.".format(name))
+
     def call_script_func(self, funcname, script_type='customization',
                          args_int=[], args_float=[], args_string=[],
                          args_buf=bytearray()):
@@ -111,18 +126,20 @@ class SceneObject(object):
                        in zip(bbox_limits[::2], bbox_limits[1::2])]
         return bbox_limits
 
-    def get_orientation(self, relative=-1):
+    def get_orientation(self, relative=None):
         """Retrieve object orientation specified as Euler angles about x, y,
         and z axes of the reference frame, each angle between -pi and pi.
         """
+        relative_handle = SceneObject.get_handle(relative, "relative")
         res, orientation = vrep.simxGetObjectOrientation(
-            self._client_id, self._handle, relative, vrep.simx_opmode_blocking)
+            self._client_id, self._handle, relative_handle,
+            vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve orientation of {}.".format(self._name))
         return orientation
 
-    def set_orientation(self, orientation, relative=-1, allow_in_sim=False):
+    def set_orientation(self, orientation, relative=None, allow_in_sim=False):
         """Set object orientation specified as Euler angles about x, y, and z
         axes of the reference frame, each angle between -pi and pi.
         """
@@ -130,8 +147,9 @@ class SceneObject(object):
             raise SimulationError(
                 "Could not set orientation of {}: setting orientation not "
                 "allowed during simulation.".format(self._name))
+        relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectOrientation(
-            self._client_id, self._handle, relative, orientation,
+            self._client_id, self._handle, relative_handle, orientation,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -148,16 +166,7 @@ class SceneObject(object):
 
     def set_parent(self, parent=None, keep_pos=True):
         """Set object parent."""
-        if parent is None:
-            parent_handle = -1
-        elif isinstance(parent, int):
-            parent_handle = parent
-        elif isinstance(parent, SceneObject):
-            parent_handle = parent.handle
-            if parent_handle is None:
-                raise ValueError("Handle of parent is invalid.")
-        else:
-            raise TypeError("Type of parent is not supported.")
+        parent_handle = SceneObject.get_handle(parent, "parent")
         res = vrep.simxSetObjectParent(
             self._client_id, self._handle, parent_handle, keep_pos,
             vrep.simx_opmode_blocking)
