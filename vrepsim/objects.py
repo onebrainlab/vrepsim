@@ -137,6 +137,15 @@ class SceneObject(object):
             raise ServerError(
                 "Could not set orientation of {}.".format(self._name))
 
+    def get_parent_handle(self):
+        """Retrieve handle to object parent."""
+        res, handle = vrep.simxGetObjectParent(
+            self._client_id, self._handle, vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve handle to the parent of "
+                              "{}.".format(self._name))
+        return handle
+
     def get_position(self, relative=-1):
         """Retrieve object position."""
         res, position = vrep.simxGetObjectPosition(

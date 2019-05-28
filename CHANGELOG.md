@@ -17,6 +17,8 @@ Changelog
   scene object simulated in V-REP.
 - Added retrieving limits of model bounding box via interface to a generic
   model simulated in V-REP.
+- Added retrieving handle to object parent via interface to a generic scene
+  object simulated in V-REP.
 - Added copying and pasting object via interface to a generic scene object
   simulated in V-REP.
 - Added removing object from scene via interface to a generic scene object
