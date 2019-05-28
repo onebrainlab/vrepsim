@@ -19,6 +19,8 @@ Changelog
   model simulated in V-REP.
 - Added retrieving handle to object parent via interface to a generic scene
   object simulated in V-REP.
+- Added setting object parent via interface to a generic scene object simulated
+  in V-REP.
 - Added copying and pasting object via interface to a generic scene object
   simulated in V-REP.
 - Added removing object from scene via interface to a generic scene object

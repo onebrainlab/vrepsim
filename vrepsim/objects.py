@@ -146,6 +146,24 @@ class SceneObject(object):
                               "{}.".format(self._name))
         return handle
 
+    def set_parent(self, parent=None, keep_pos=True):
+        """Set object parent."""
+        if parent is None:
+            parent_handle = -1
+        elif isinstance(parent, int):
+            parent_handle = parent
+        elif isinstance(parent, SceneObject):
+            parent_handle = parent.handle
+            if parent_handle is None:
+                raise ValueError("Handle of parent is invalid.")
+        else:
+            raise TypeError("Type of parent is not supported.")
+        res = vrep.simxSetObjectParent(
+            self._client_id, self._handle, parent_handle, keep_pos,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not set parent of {}.".format(self._name))
+
     def get_position(self, relative=-1):
         """Retrieve object position."""
         res, position = vrep.simxGetObjectPosition(
