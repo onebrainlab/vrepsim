@@ -6,7 +6,7 @@ from distutils.core import setup
 
 setup(
     name="vrepsim",
-    version='0.3.0.dev1',
+    version='0.3.0',
     author="Przemyslaw (Mack) Nowak",
     author_email="pnowak.mack@gmail.com",
     description="High-level Python interface to V-REP simulator",
