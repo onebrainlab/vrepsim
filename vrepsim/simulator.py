@@ -21,7 +21,9 @@ import time
 import vrep
 
 from vrepsim.constants import VREP_FLOAT_PREC
-from vrepsim.exceptions import ServerError
+from vrepsim.exceptions import ConnectionError, ServerError
+
+_vrep_sim = None
 
 
 class Simulator(object):
@@ -50,30 +52,50 @@ class Simulator(object):
     def connect(self, wait=True, no_reconnect=True, timeout=5000, cycle=5,
                 verbose=False):
         """Connect to V-REP remote API server."""
+        global _vrep_sim
+
+        # Check if connection to V-REP is already established
+        if _vrep_sim is None:
+            conn_msg = "connected"
+        else:
+            if self._client_id is not None:
+                conn_msg = "reconnected"
+            else:
+                raise ConnectionError(
+                    "Could not connect to V-REP remote API server at {0}:{1}: "
+                    "another connection to V-REP remote API server already "
+                    "established.".format(self._addr, self._port))
+
         # Just in case, close all opened connections to V-REP
         vrep.simxFinish(-1)
         self._client_id = None
+        _vrep_sim = None
 
         # Connect to V-REP
         client_id = vrep.simxStart(self._addr, self._port, wait, no_reconnect,
                                    timeout, cycle)
         if client_id == -1:
-            raise ServerError("Failed to connect to V-REP remote API server "
-                              "at {0}:{1}.".format(self._addr, self._port))
+            raise ConnectionError(
+                "Failed to connect to V-REP remote API server at "
+                "{0}:{1}.".format(self._addr, self._port))
         self._client_id = client_id
+        _vrep_sim = self
 
         # If necessary, display confirmation message
         if verbose:
-            print("Successully connected to V-REP remote API server at "
-                  "{0}:{1}.".format(self._addr, self._port))
+            print("Successully {0} to V-REP remote API server at "
+                  "{1}:{2}.".format(conn_msg, self._addr, self._port))
 
     def disconnect(self, verbose=False):
         """Disconnect from V-REP remote API server."""
+        global _vrep_sim
+
         # If connected to V-REP, disconnect
         if self._client_id is not None:
             # Disconnect from V-REP
             vrep.simxFinish(self._client_id)
             self._client_id = None
+            _vrep_sim = None
 
             # If necessary, display confirmation message
             if verbose:

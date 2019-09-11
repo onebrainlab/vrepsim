@@ -4,6 +4,12 @@ Changelog
 0.4.0 - Unreleased
 ------------------
 
+### Changed
+
+- Changed connecting to and disconnecting from V-REP remote API server via
+  interface to V-REP remote API server such that establishing multiple
+  connections is explicitly forbidden.
+
 0.3.0 - 2019-06-26
 ------------------
 
