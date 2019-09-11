@@ -4,6 +4,11 @@ Changelog
 0.4.0 - Unreleased
 ------------------
 
+### Added
+
+- Added retrieving default interface to V-REP remote API server via interface
+  to V-REP remote API server.
+
 ### Changed
 
 - Changed connecting to and disconnecting from V-REP remote API server via

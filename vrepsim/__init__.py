@@ -25,5 +25,5 @@ from .models import Model, PioneerBot
 from .objects import (Dummy, Motor, MotorArray, ProximitySensor,
                       ProximitySensorArray, SceneObject, SensorArray,
                       VisionSensor)
-from .simulator import Simulator
+from .simulator import Simulator, get_default_simulator
 from . import collections, models, nengo, objects, simulator

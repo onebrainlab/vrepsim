@@ -5,6 +5,7 @@ Interface to V-REP remote API server provides the following functionality:
 
 - connecting to a V-REP remote API server;
 - disconnecting from a V-REP remote API server;
+- retrieving default interface to V-REP remote API server;
 - retrieving V-REP version;
 - retrieving dynamics engine name;
 - retrieving scene path;
@@ -24,6 +25,14 @@ from vrepsim.constants import VREP_FLOAT_PREC
 from vrepsim.exceptions import ConnectionError, ServerError
 
 _vrep_sim = None
+
+
+def get_default_simulator(raise_on_none=False):
+    """Retrieve default interface to V-REP remote API server."""
+    if _vrep_sim is None and raise_on_none:
+        raise RuntimeError("No interface is currently connected to V-REP "
+                           "remote API server.")
+    return _vrep_sim
 
 
 class Simulator(object):
