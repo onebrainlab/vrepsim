@@ -35,7 +35,7 @@ class Model(SceneObject):
         bbox_limits = []
         for limit in BBOX_LIMITS:
             res, lim = vrep.simxGetObjectFloatParameter(
-                self._client_id, self._handle, limit[1],
+                self.client_id, self._handle, limit[1],
                 vrep.simx_opmode_blocking)
             if res != vrep.simx_return_ok:
                 raise ServerError("Could not retrieve {0} limit of {1} "
@@ -52,7 +52,7 @@ class Model(SceneObject):
 
     def remove(self):
         """Remove model from scene."""
-        res = vrep.simxRemoveModel(self._client_id, self._handle,
+        res = vrep.simxRemoveModel(self.client_id, self._handle,
                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))

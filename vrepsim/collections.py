@@ -7,14 +7,15 @@ collection of scene objects simulated in V-REP.
 
 import vrep
 
+from vrepsim.base import Communicator
 from vrepsim.exceptions import ServerError
 
 
-class Collection(object):
+class Collection(Communicator):
     """Interface to a collection of scene objects simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
-        self._client_id = vrep_sim.client_id
+        super(Collection, self).__init__(vrep_sim)
         self._name = name
         self._handle = self._get_handle()
 
@@ -31,7 +32,7 @@ class Collection(object):
     def get_names(self):
         """Retrieve names of component scene objects."""
         res, _, _, _, names = vrep.simxGetObjectGroupData(
-            self._client_id, self._handle, 0, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, 0, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve names of {}.".format(self._name))
@@ -43,7 +44,7 @@ class Collection(object):
         angle between -pi and pi.
         """
         res, _, _, orientations, _ = vrep.simxGetObjectGroupData(
-            self._client_id, self._handle, 5, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, 5, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve orientations of {}.".format(self._name))
@@ -53,7 +54,7 @@ class Collection(object):
     def get_positions(self):
         """Retrieve positions of component scene objects."""
         res, _, _, positions, _ = vrep.simxGetObjectGroupData(
-            self._client_id, self._handle, 3, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, 3, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve positions of {}.".format(self._name))
@@ -61,7 +62,7 @@ class Collection(object):
 
     def _get_handle(self):
         """Retrieve collection handle."""
-        res, handle = vrep.simxGetCollectionHandle(self._client_id, self._name,
+        res, handle = vrep.simxGetCollectionHandle(self.client_id, self._name,
                                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(

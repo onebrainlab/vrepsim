@@ -9,11 +9,14 @@ following functionality:
 - updating states of scene objects simulated in V-REP.
 """
 
-class NengoComm(object):
+from vrepsim.base import Communicator
+
+
+class NengoComm(Communicator):
     """Nengo communicator for data exchange with V-REP simulator."""
 
     def __init__(self, vrep_sim, n_nengo_sim_steps):
-        self._vrep_sim = vrep_sim
+        super(NengoComm, self).__init__(vrep_sim)
         self._input_handlers = []
         self._output_handlers = []
         self._size_in = 0
@@ -48,7 +51,7 @@ class NengoComm(object):
             self._output = output
 
             # Trigger next V-REP simulation step
-            self._vrep_sim.trig_sim_step()
+            self.vrep_sim.trig_sim_step()
 
         return self._output
 

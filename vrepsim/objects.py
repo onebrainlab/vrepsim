@@ -19,16 +19,16 @@ It also provides interfaces to the following arrays of scene objects:
 
 import vrep
 
+from vrepsim.base import Communicator
 from vrepsim.constants import VREP_FLOAT_PREC
 from vrepsim.exceptions import ServerError, SimulationError
 
 
-class SceneObject(object):
+class SceneObject(Communicator):
     """Interface to a generic scene object simulated in V-REP."""
 
     def __init__(self, vrep_sim, name):
-        self._vrep_sim = vrep_sim
-        self._client_id = self._vrep_sim.client_id
+        super(SceneObject, self).__init__(vrep_sim)
         if name:
             self._name = name
             self._handle = self._get_handle()
@@ -79,7 +79,7 @@ class SceneObject(object):
         # Call function from the script
         res, rets_int, rets_float, rets_string, rets_buf = \
             vrep.simxCallScriptFunction(
-                self._client_id, self._name, vrep_script_type, funcname,
+                self.client_id, self._name, vrep_script_type, funcname,
                 args_int, args_float, args_string, args_buf,
                 vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
@@ -91,7 +91,7 @@ class SceneObject(object):
     def copy_paste(self):
         """Copy and paste object."""
         res, handles = vrep.simxCopyPasteObjects(
-            self._client_id, [self._handle], vrep.simx_opmode_blocking)
+            self.client_id, [self._handle], vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not copy and paste {}.".format(self._name))
@@ -111,7 +111,7 @@ class SceneObject(object):
         bbox_limits = []
         for limit in BBOX_LIMITS:
             res, lim = vrep.simxGetObjectFloatParameter(
-                self._client_id, self._handle, limit[1],
+                self.client_id, self._handle, limit[1],
                 vrep.simx_opmode_blocking)
             if res != vrep.simx_return_ok:
                 raise ServerError("Could not retrieve {0} limit of {1} "
@@ -132,7 +132,7 @@ class SceneObject(object):
         """
         relative_handle = SceneObject.get_handle(relative, "relative")
         res, orientation = vrep.simxGetObjectOrientation(
-            self._client_id, self._handle, relative_handle,
+            self.client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -143,13 +143,13 @@ class SceneObject(object):
         """Set object orientation specified as Euler angles about x, y, and z
         axes of the reference frame, each angle between -pi and pi.
         """
-        if not allow_in_sim and self._vrep_sim.is_sim_started():
+        if not allow_in_sim and self.vrep_sim.is_sim_started():
             raise SimulationError(
                 "Could not set orientation of {}: setting orientation not "
                 "allowed during simulation.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectOrientation(
-            self._client_id, self._handle, relative_handle, orientation,
+            self.client_id, self._handle, relative_handle, orientation,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -158,7 +158,7 @@ class SceneObject(object):
     def get_parent_handle(self):
         """Retrieve handle to object parent."""
         res, handle = vrep.simxGetObjectParent(
-            self._client_id, self._handle, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not retrieve handle to the parent of "
                               "{}.".format(self._name))
@@ -168,7 +168,7 @@ class SceneObject(object):
         """Set object parent."""
         parent_handle = SceneObject.get_handle(parent, "parent")
         res = vrep.simxSetObjectParent(
-            self._client_id, self._handle, parent_handle, keep_pos,
+            self.client_id, self._handle, parent_handle, keep_pos,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set parent of {}.".format(self._name))
@@ -177,7 +177,7 @@ class SceneObject(object):
         """Retrieve object position."""
         relative_handle = SceneObject.get_handle(relative, "relative")
         res, position = vrep.simxGetObjectPosition(
-            self._client_id, self._handle, relative_handle,
+            self.client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -186,13 +186,13 @@ class SceneObject(object):
 
     def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""
-        if not allow_in_sim and self._vrep_sim.is_sim_started():
+        if not allow_in_sim and self.vrep_sim.is_sim_started():
             raise SimulationError(
                 "Could not set position of {}: setting position not allowed "
                 "during simulation.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectPosition(
-            self._client_id, self._handle, relative_handle, position,
+            self.client_id, self._handle, relative_handle, position,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -200,7 +200,7 @@ class SceneObject(object):
 
     def remove(self):
         """Remove object from scene."""
-        res = vrep.simxRemoveObject(self._client_id, self._handle,
+        res = vrep.simxRemoveObject(self.client_id, self._handle,
                                     vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
@@ -209,7 +209,7 @@ class SceneObject(object):
 
     def _get_handle(self):
         """Retrieve object handle."""
-        res, handle = vrep.simxGetObjectHandle(self._client_id, self._name,
+        res, handle = vrep.simxGetObjectHandle(self.client_id, self._name,
                                                vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -233,7 +233,7 @@ class Motor(SceneObject):
     def set_velocity(self, velocity):
         """Set motor velocity."""
         res = vrep.simxSetJointTargetVelocity(
-            self._client_id, self._handle, velocity, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, velocity, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set {} velocity.".format(self._name))
 
@@ -249,7 +249,7 @@ class ProximitySensor(SceneObject):
         values correspond to further distances.
         """
         res, detect, point, _, _ = vrep.simxReadProximitySensor(
-            self._client_id, self._handle, vrep.simx_opmode_blocking)
+            self.client_id, self._handle, vrep.simx_opmode_blocking)
         if res == vrep.simx_return_ok:
             if detect:
                 return 1.0 - point[2]  # distance inverted
@@ -272,8 +272,7 @@ class VisionSensor(SceneObject):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP
         res, resolution, image = vrep.simxGetVisionSensorImage(
-            self._client_id, self._handle, grayscale,
-            vrep.simx_opmode_blocking)
+            self.client_id, self._handle, grayscale, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve image from {}.".format(self._name))
