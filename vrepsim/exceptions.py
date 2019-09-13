@@ -3,9 +3,9 @@
 
 Exceptions include:
 
-- ConnectionError - raised during connecting to V-REP remote API server;
-- ServerError - raised during communication with V-REP remote API server;
-- SimulationError - raised during simulation.
+- ConnectionError - related to connection to V-REP remote API server;
+- ServerError - related to communication with V-REP remote API server;
+- SimulationError - related to simulation.
 """
 
 
@@ -15,15 +15,15 @@ class VREPSimError(Exception):
 
 
 class ConnectionError(VREPSimError, RuntimeError):
-    """Error during connecting to V-REP remote API server."""
+    """Error related to connection to V-REP remote API server."""
     pass
 
 
 class ServerError(VREPSimError, RuntimeError):
-    """Error during communication with V-REP remote API server."""
+    """Error related to communication with V-REP remote API server."""
     pass
 
 
 class SimulationError(VREPSimError, RuntimeError):
-    """Error during simulation."""
+    """Error related to simulation."""
     pass

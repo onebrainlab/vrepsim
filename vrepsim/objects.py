@@ -21,7 +21,7 @@ import vrep
 
 from vrepsim.base import Communicator
 from vrepsim.constants import VREP_FLOAT_PREC
-from vrepsim.exceptions import ServerError, SimulationError
+from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
 
 
 class SceneObject(Communicator):
@@ -77,11 +77,16 @@ class SceneObject(Communicator):
             raise ValueError("Script type is not supported.")
 
         # Call function from the script
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not call function {0} from {1} script associated with "
+                "{2}: not connected to V-REP remote API server."
+                "".format(funcname, script_type, self._name))
         res, rets_int, rets_float, rets_string, rets_buf = \
             vrep.simxCallScriptFunction(
-                self.client_id, self._name, vrep_script_type, funcname,
-                args_int, args_float, args_string, args_buf,
-                vrep.simx_opmode_blocking)
+                client_id, self._name, vrep_script_type, funcname, args_int,
+                args_float, args_string, args_buf, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not call function {0} from {1} script associated with "
@@ -90,8 +95,13 @@ class SceneObject(Communicator):
 
     def copy_paste(self):
         """Copy and paste object."""
-        res, handles = vrep.simxCopyPasteObjects(
-            self.client_id, [self._handle], vrep.simx_opmode_blocking)
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not copy and paste {}: not connected to V-REP remote "
+                "API server.".format(self._name))
+        res, handles = vrep.simxCopyPasteObjects(client_id, [self._handle],
+                                                 vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not copy and paste {}.".format(self._name))
@@ -108,11 +118,15 @@ class SceneObject(Communicator):
             ('z_max', vrep.sim_objfloatparam_objbbox_max_z)
             )
 
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve limits of {} bounding box: not connected "
+                "to V-REP remote API server.".format(self._name))
         bbox_limits = []
         for limit in BBOX_LIMITS:
             res, lim = vrep.simxGetObjectFloatParameter(
-                self.client_id, self._handle, limit[1],
-                vrep.simx_opmode_blocking)
+                client_id, self._handle, limit[1], vrep.simx_opmode_blocking)
             if res != vrep.simx_return_ok:
                 raise ServerError("Could not retrieve {0} limit of {1} "
                                   "bounding box.".format(limit[0], self._name))
@@ -130,9 +144,14 @@ class SceneObject(Communicator):
         """Retrieve object orientation specified as Euler angles about x, y,
         and z axes of the reference frame, each angle between -pi and pi.
         """
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve orientation of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res, orientation = vrep.simxGetObjectOrientation(
-            self.client_id, self._handle, relative_handle,
+            client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -143,13 +162,18 @@ class SceneObject(Communicator):
         """Set object orientation specified as Euler angles about x, y, and z
         axes of the reference frame, each angle between -pi and pi.
         """
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not set orientation of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         if not allow_in_sim and self.vrep_sim.is_sim_started():
             raise SimulationError(
                 "Could not set orientation of {}: setting orientation not "
                 "allowed during simulation.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectOrientation(
-            self.client_id, self._handle, relative_handle, orientation,
+            client_id, self._handle, relative_handle, orientation,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -157,8 +181,13 @@ class SceneObject(Communicator):
 
     def get_parent_handle(self):
         """Retrieve handle to object parent."""
-        res, handle = vrep.simxGetObjectParent(
-            self.client_id, self._handle, vrep.simx_opmode_blocking)
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve handle to the parent of {}: not connected "
+                "to V-REP remote API server.".format(self._name))
+        res, handle = vrep.simxGetObjectParent(client_id, self._handle,
+                                               vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not retrieve handle to the parent of "
                               "{}.".format(self._name))
@@ -166,18 +195,27 @@ class SceneObject(Communicator):
 
     def set_parent(self, parent=None, keep_pos=True):
         """Set object parent."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not set parent of {}: not connected to V-REP remote "
+                "API server.".format(self._name))
         parent_handle = SceneObject.get_handle(parent, "parent")
-        res = vrep.simxSetObjectParent(
-            self.client_id, self._handle, parent_handle, keep_pos,
-            vrep.simx_opmode_blocking)
+        res = vrep.simxSetObjectParent(client_id, self._handle, parent_handle,
+                                       keep_pos, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set parent of {}.".format(self._name))
 
     def get_position(self, relative=None):
         """Retrieve object position."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve position of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res, position = vrep.simxGetObjectPosition(
-            self.client_id, self._handle, relative_handle,
+            client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -186,13 +224,18 @@ class SceneObject(Communicator):
 
     def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not set position of {}: not connected to V-REP remote "
+                "API server.".format(self._name))
         if not allow_in_sim and self.vrep_sim.is_sim_started():
             raise SimulationError(
                 "Could not set position of {}: setting position not allowed "
                 "during simulation.".format(self._name))
         relative_handle = SceneObject.get_handle(relative, "relative")
         res = vrep.simxSetObjectPosition(
-            self.client_id, self._handle, relative_handle, position,
+            client_id, self._handle, relative_handle, position,
             vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -200,7 +243,12 @@ class SceneObject(Communicator):
 
     def remove(self):
         """Remove object from scene."""
-        res = vrep.simxRemoveObject(self.client_id, self._handle,
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not remove {}: not connected to V-REP remote API "
+                "server.".format(self._name))
+        res = vrep.simxRemoveObject(client_id, self._handle,
                                     vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
@@ -209,7 +257,12 @@ class SceneObject(Communicator):
 
     def _get_handle(self):
         """Retrieve object handle."""
-        res, handle = vrep.simxGetObjectHandle(self.client_id, self._name,
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve handle to {}: not connected to V-REP "
+                "remote API server.".format(self._name))
+        res, handle = vrep.simxGetObjectHandle(client_id, self._name,
                                                vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -232,8 +285,13 @@ class Motor(SceneObject):
 
     def set_velocity(self, velocity):
         """Set motor velocity."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not set {} velocity: not connected to V-REP remote API "
+                "server.".format(self._name))
         res = vrep.simxSetJointTargetVelocity(
-            self.client_id, self._handle, velocity, vrep.simx_opmode_blocking)
+            client_id, self._handle, velocity, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set {} velocity.".format(self._name))
 
@@ -248,8 +306,13 @@ class ProximitySensor(SceneObject):
         """Retrieve distance to the detected point inverted such that smaller
         values correspond to further distances.
         """
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve data from {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         res, detect, point, _, _ = vrep.simxReadProximitySensor(
-            self.client_id, self._handle, vrep.simx_opmode_blocking)
+            client_id, self._handle, vrep.simx_opmode_blocking)
         if res == vrep.simx_return_ok:
             if detect:
                 return 1.0 - point[2]  # distance inverted
@@ -271,8 +334,13 @@ class VisionSensor(SceneObject):
     def get_image(self, grayscale=False):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve image from {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         res, resolution, image = vrep.simxGetVisionSensorImage(
-            self.client_id, self._handle, grayscale, vrep.simx_opmode_blocking)
+            client_id, self._handle, grayscale, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve image from {}.".format(self._name))

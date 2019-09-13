@@ -121,6 +121,10 @@ class Simulator(object):
         vrep.sim_floatparam_dynamic_step_size = 3  # constant missing in Python
                                                    # binding to V-REP remote
                                                    # API
+        if self._client_id is None:
+            raise ConnectionError(
+                "Could not retrieve dynamics engine time step: not connected "
+                "to V-REP remote API server.")
         res, dyn_eng_dt = vrep.simxGetFloatingParameter(
             self._client_id, vrep.sim_floatparam_dynamic_step_size,
             vrep.simx_opmode_blocking)
@@ -136,6 +140,9 @@ class Simulator(object):
     def get_dyn_eng_name(self):
         """Retrieve dynamics engine name."""
         dyn_engs_names = {0: "Bullet", 1: "ODE", 2: "Vortex", 3: "Newton"}
+        if self._client_id is None:
+            raise ConnectionError("Could not retrieve dynamics engine name: "
+                                  "not connected to V-REP remote API server.")
         res, dyn_eng_id = vrep.simxGetIntegerParameter(
             self._client_id, vrep.sim_intparam_dynamic_engine,
             vrep.simx_opmode_blocking)
@@ -145,6 +152,9 @@ class Simulator(object):
 
     def get_scene_path(self):
         """Retrieve scene path."""
+        if self._client_id is None:
+            raise ConnectionError("Could not retrieve scene path: not "
+                                  "connected to V-REP remote API server.")
         res, scene_path = vrep.simxGetStringParameter(
             self._client_id, vrep.sim_stringparam_scene_path_and_name,
             vrep.simx_opmode_blocking)
@@ -154,6 +164,10 @@ class Simulator(object):
 
     def get_sim_dt(self, prec=VREP_FLOAT_PREC):
         """Retrieve V-REP simulation time step."""
+        if self._client_id is None:
+            raise ConnectionError(
+                "Could not retrieve V-REP simulation time step: not connected "
+                "to V-REP remote API server.")
         res, sim_dt = vrep.simxGetFloatingParameter(
             self._client_id, vrep.sim_floatparam_simulation_time_step,
             vrep.simx_opmode_blocking)
@@ -167,6 +181,9 @@ class Simulator(object):
 
     def get_version(self):
         """Retrieve V-REP version."""
+        if self._client_id is None:
+            raise ConnectionError("Could not retrieve V-REP version: not "
+                                  "connected to V-REP remote API server.")
         res, version = vrep.simxGetIntegerParameter(
             self._client_id, vrep.sim_intparam_program_version,
             vrep.simx_opmode_blocking)
@@ -194,6 +211,10 @@ class Simulator(object):
         # that it needs to wait for a trigger signal); this operation is
         # performed only to receive a new message from the V-REP remote API
         # server so that the next operation could operate on up-to-date data
+        if self._client_id is None:
+            raise ConnectionError(
+                "Could not retrieve whether V-REP simulation is started: not "
+                "connected to V-REP remote API server.")
         res, _ = vrep.simxGetBooleanParameter(
             self._client_id, vrep.sim_boolparam_waiting_for_trigger,
             vrep.simx_opmode_blocking)
@@ -215,6 +236,9 @@ class Simulator(object):
     def start_sim(self, verbose=False):
         """Start V-REP simulation in synchronous operation mode."""
         # Start V-REP simulation in synchronous operation mode
+        if self._client_id is None:
+            raise ConnectionError("Could not start V-REP simulation: not "
+                                  "connected to V-REP remote API server.")
         res = vrep.simxSynchronous(self._client_id, True)
         if res != vrep.simx_return_ok:
             raise ServerError(
@@ -232,6 +256,9 @@ class Simulator(object):
     def stop_sim(self, verbose=False):
         """Stop V-REP simulation."""
         # Stop V-REP simulation
+        if self._client_id is None:
+            raise ConnectionError("Could not stop V-REP simulation: not "
+                                  "connected to V-REP remote API server.")
         res = vrep.simxStopSimulation(self._client_id,
                                       vrep.simx_opmode_blocking)
         if res not in (vrep.simx_return_ok, vrep.simx_return_novalue_flag):
@@ -244,6 +271,9 @@ class Simulator(object):
 
     def trig_sim_step(self):
         """Trigger V-REP simulation step."""
+        if self._client_id is None:
+            raise ConnectionError("Could not trigger V-REP simulation step: "
+                                  "not connected to V-REP remote API server.")
         res = vrep.simxSynchronousTrigger(self._client_id)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not trigger V-REP simulation step.")

@@ -8,7 +8,7 @@ collection of scene objects simulated in V-REP.
 import vrep
 
 from vrepsim.base import Communicator
-from vrepsim.exceptions import ServerError
+from vrepsim.exceptions import ConnectionError, ServerError
 
 
 class Collection(Communicator):
@@ -31,8 +31,13 @@ class Collection(Communicator):
 
     def get_names(self):
         """Retrieve names of component scene objects."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve names of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         res, _, _, _, names = vrep.simxGetObjectGroupData(
-            self.client_id, self._handle, 0, vrep.simx_opmode_blocking)
+            client_id, self._handle, 0, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve names of {}.".format(self._name))
@@ -43,8 +48,13 @@ class Collection(Communicator):
         angles about x, y, and z axes of the absolute reference frame, each
         angle between -pi and pi.
         """
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve orientations of {}: not connected to "
+                "V-REP remote API server.".format(self._name))
         res, _, _, orientations, _ = vrep.simxGetObjectGroupData(
-            self.client_id, self._handle, 5, vrep.simx_opmode_blocking)
+            client_id, self._handle, 5, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve orientations of {}.".format(self._name))
@@ -53,8 +63,13 @@ class Collection(Communicator):
 
     def get_positions(self):
         """Retrieve positions of component scene objects."""
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve positions of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
         res, _, _, positions, _ = vrep.simxGetObjectGroupData(
-            self.client_id, self._handle, 3, vrep.simx_opmode_blocking)
+            client_id, self._handle, 3, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve positions of {}.".format(self._name))
@@ -62,7 +77,12 @@ class Collection(Communicator):
 
     def _get_handle(self):
         """Retrieve collection handle."""
-        res, handle = vrep.simxGetCollectionHandle(self.client_id, self._name,
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve handle to {}: not connected to V-REP "
+                "remote API server.".format(self._name))
+        res, handle = vrep.simxGetCollectionHandle(client_id, self._name,
                                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError(

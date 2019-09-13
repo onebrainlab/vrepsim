@@ -11,7 +11,7 @@ following models:
 import vrep
 
 from vrepsim.constants import VREP_FLOAT_PREC
-from vrepsim.exceptions import ServerError
+from vrepsim.exceptions import ConnectionError, ServerError
 from vrepsim.objects import MotorArray, ProximitySensorArray, SceneObject
 
 
@@ -32,11 +32,15 @@ class Model(SceneObject):
             ('z_max', vrep.sim_objfloatparam_modelbbox_max_z)
             )
 
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve limits of {} bounding box: not connected "
+                "to V-REP remote API server.".format(self._name))
         bbox_limits = []
         for limit in BBOX_LIMITS:
             res, lim = vrep.simxGetObjectFloatParameter(
-                self.client_id, self._handle, limit[1],
-                vrep.simx_opmode_blocking)
+                client_id, self._handle, limit[1], vrep.simx_opmode_blocking)
             if res != vrep.simx_return_ok:
                 raise ServerError("Could not retrieve {0} limit of {1} "
                                   "bounding box.".format(limit[0], self._name))
@@ -52,7 +56,12 @@ class Model(SceneObject):
 
     def remove(self):
         """Remove model from scene."""
-        res = vrep.simxRemoveModel(self.client_id, self._handle,
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not remove {}: not connected to V-REP remote API "
+                "server.".format(self._name))
+        res = vrep.simxRemoveModel(client_id, self._handle,
                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
