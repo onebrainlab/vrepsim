@@ -14,7 +14,7 @@ from vrepsim.exceptions import ConnectionError, ServerError
 class Collection(Communicator):
     """Interface to a collection of scene objects simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
+    def __init__(self, name, vrep_sim=None):
         super(Collection, self).__init__(vrep_sim)
         self._name = name
         self._handle = self._get_handle()

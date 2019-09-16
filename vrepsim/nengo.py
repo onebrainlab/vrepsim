@@ -15,7 +15,7 @@ from vrepsim.base import Communicator
 class NengoComm(Communicator):
     """Nengo communicator for data exchange with V-REP simulator."""
 
-    def __init__(self, vrep_sim, n_nengo_sim_steps):
+    def __init__(self, n_nengo_sim_steps, vrep_sim=None):
         super(NengoComm, self).__init__(vrep_sim)
         self._input_handlers = []
         self._output_handlers = []

@@ -27,7 +27,7 @@ from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
 class SceneObject(Communicator):
     """Interface to a generic scene object simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
+    def __init__(self, name, vrep_sim=None):
         super(SceneObject, self).__init__(vrep_sim)
         if name:
             self._name = name
@@ -273,15 +273,15 @@ class SceneObject(Communicator):
 class Dummy(SceneObject):
     """Interface to dummy object simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
-        super(Dummy, self).__init__(vrep_sim, name)
+    def __init__(self, name, vrep_sim=None):
+        super(Dummy, self).__init__(name, vrep_sim)
 
 
 class Motor(SceneObject):
     """Interface to motor (motorized joint) simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
-        super(Motor, self).__init__(vrep_sim, name)
+    def __init__(self, name, vrep_sim=None):
+        super(Motor, self).__init__(name, vrep_sim)
 
     def set_velocity(self, velocity):
         """Set motor velocity."""
@@ -299,8 +299,8 @@ class Motor(SceneObject):
 class ProximitySensor(SceneObject):
     """Interface to proximity sensor simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
-        super(ProximitySensor, self).__init__(vrep_sim, name)
+    def __init__(self, name, vrep_sim=None):
+        super(ProximitySensor, self).__init__(name, vrep_sim)
 
     def get_inv_distance(self):
         """Retrieve distance to the detected point inverted such that smaller
@@ -328,8 +328,8 @@ class ProximitySensor(SceneObject):
 class VisionSensor(SceneObject):
     """Interface to vision sensor simulated in V-REP."""
 
-    def __init__(self, vrep_sim, name):
-        super(VisionSensor, self).__init__(vrep_sim, name)
+    def __init__(self, name, vrep_sim=None):
+        super(VisionSensor, self).__init__(name, vrep_sim)
 
     def get_image(self, grayscale=False):
         """Retrieve image."""
@@ -364,9 +364,9 @@ class VisionSensor(SceneObject):
 class MotorArray(object):
     """Interface to an array of motors simulated in V-REP."""
 
-    def __init__(self, vrep_sim, motor_names):
+    def __init__(self, motor_names, vrep_sim=None):
         if motor_names:
-            self._motors = [Motor(vrep_sim, name) for name in motor_names]
+            self._motors = [Motor(name, vrep_sim) for name in motor_names]
         else:
             self._motors = []
 
@@ -418,10 +418,10 @@ class SensorArray(object):
 class ProximitySensorArray(SensorArray):
     """Interface to an array of proximity sensors simulated in V-REP."""
 
-    def __init__(self, vrep_sim, sensor_names):
+    def __init__(self, sensor_names, vrep_sim=None):
         super(ProximitySensorArray, self).__init__()
         if sensor_names:
-            self._sensors = [ProximitySensor(vrep_sim, name)
+            self._sensors = [ProximitySensor(name, vrep_sim)
                              for name in sensor_names]
 
     def get_inv_distances(self):
