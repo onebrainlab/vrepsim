@@ -38,9 +38,14 @@ def get_default_simulator(raise_on_none=False):
 class Simulator(object):
     """Interface to V-REP remote API server."""
 
-    def __init__(self, addr, port):
+    def __init__(self, addr, port, wait=True, reconnect=False, timeout=5000,
+                 cycle=5):
         self._addr = addr
         self._port = port
+        self._wait = wait
+        self._reconnect = reconnect
+        self._timeout = timeout
+        self._cycle = cycle
         self._client_id = None
 
     @property
@@ -54,12 +59,37 @@ class Simulator(object):
         return self._client_id
 
     @property
+    def cycle(self):
+        """Interval between data exchanges with V-REP."""
+        return self._cycle
+
+    @property
     def port(self):
         """V-REP remote API server port."""
         return self._port
 
-    def connect(self, wait=True, no_reconnect=True, timeout=5000, cycle=5,
-                verbose=False):
+    @property
+    def reconnect(self):
+        """Automatic attempts to reconnect to V-REP remote API server after
+        losing connection.
+        """
+        return self._reconnect
+
+    @property
+    def timeout(self):
+        """Timeout for establishing connection with V-REP remote API server or
+        for blocking function calls.
+        """
+        return self._timeout
+
+    @property
+    def wait(self):
+        """Blocking wait until establishing connection with V-REP remote API
+        server or exceeding timeout.
+        """
+        return self._wait
+
+    def connect(self, verbose=False):
         """Connect to V-REP remote API server."""
         global _vrep_sim
 
@@ -81,8 +111,9 @@ class Simulator(object):
         _vrep_sim = None
 
         # Connect to V-REP
-        client_id = vrep.simxStart(self._addr, self._port, wait, no_reconnect,
-                                   timeout, cycle)
+        client_id = vrep.simxStart(
+            self._addr, self._port, self._wait, not self._reconnect,
+            self._timeout, self._cycle)
         if client_id == -1:
             raise ConnectionError(
                 "Failed to connect to V-REP remote API server at "
