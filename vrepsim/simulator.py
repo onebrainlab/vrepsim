@@ -39,13 +39,14 @@ class Simulator(object):
     """Interface to V-REP remote API server."""
 
     def __init__(self, addr, port, wait=True, reconnect=False, timeout=5000,
-                 cycle=5):
+                 cycle=5, verbose=False):
         self._addr = addr
         self._port = port
         self._wait = wait
         self._reconnect = reconnect
         self._timeout = timeout
         self._cycle = cycle
+        self.verbose = verbose
         self._client_id = None
 
     @property
@@ -89,9 +90,13 @@ class Simulator(object):
         """
         return self._wait
 
-    def connect(self, verbose=False):
+    def connect(self, verbose=None):
         """Connect to V-REP remote API server."""
         global _vrep_sim
+
+        # If necessary, determine whether messages should be displayed
+        if verbose is None:
+            verbose = self.verbose
 
         # Check if connection to V-REP is already established
         if _vrep_sim is None:
@@ -126,9 +131,13 @@ class Simulator(object):
             print("Successully {0} to V-REP remote API server at "
                   "{1}:{2}.".format(conn_msg, self._addr, self._port))
 
-    def disconnect(self, verbose=False):
+    def disconnect(self, verbose=None):
         """Disconnect from V-REP remote API server."""
         global _vrep_sim
+
+        # If necessary, determine whether messages should be displayed
+        if verbose is None:
+            verbose = self.verbose
 
         # If connected to V-REP, disconnect
         if self._client_id is not None:
@@ -264,8 +273,12 @@ class Simulator(object):
         # Determine whether V-REP simulation is started
         return server_state & SIM_NOT_STOPPED
 
-    def start_sim(self, verbose=False):
+    def start_sim(self, verbose=None):
         """Start V-REP simulation in synchronous operation mode."""
+        # If necessary, determine whether messages should be displayed
+        if verbose is None:
+            verbose = self.verbose
+
         # Start V-REP simulation in synchronous operation mode
         if self._client_id is None:
             raise ConnectionError("Could not start V-REP simulation: not "
@@ -284,8 +297,12 @@ class Simulator(object):
             print("V-REP simulation started at "
                   "{}.".format(time.strftime("%H:%M:%S")))
 
-    def stop_sim(self, verbose=False):
+    def stop_sim(self, verbose=None):
         """Stop V-REP simulation."""
+        # If necessary, determine whether messages should be displayed
+        if verbose is None:
+            verbose = self.verbose
+
         # Stop V-REP simulation
         if self._client_id is None:
             raise ConnectionError("Could not stop V-REP simulation: not "
