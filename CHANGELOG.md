@@ -8,6 +8,8 @@ Changelog
 
 - Added retrieving default interface to V-REP remote API server via interface
   to V-REP remote API server.
+- Added communicating with V-REP remote API server using context manager via
+  interface to V-REP remote API server.
 
 ### Changed
 

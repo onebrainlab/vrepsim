@@ -49,6 +49,13 @@ class Simulator(object):
         self.verbose = verbose
         self._client_id = None
 
+    def __enter__(self):
+        if self._client_id is None:
+            self.connect()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.disconnect()
+
     @property
     def addr(self):
         """V-REP remote API server address."""
