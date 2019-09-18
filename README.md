@@ -37,11 +37,8 @@ opened in the simulator.
 import vrep
 import vrepsim as vrs
 
-# Connect to V-REP
-vrep_sim = vrs.Simulator('127.0.0.1', 19997)
-vrep_sim.connect(verbose=True)
-
-try:
+vrep_sim = vrs.Simulator('127.0.0.1', 19997, verbose=True)
+with vrep_sim:
     # Retrieve V-REP simulation time step
     sim_dt = vrep_sim.get_sim_dt()
 
@@ -58,7 +55,7 @@ try:
         print("Could not add a message to the status bar.")
 
     # Start V-REP simulation in synchronous operation mode
-    vrep_sim.start_sim(verbose=True)
+    vrep_sim.start_sim()
 
     try:
         # Run a simulation for the specified time
@@ -74,9 +71,5 @@ try:
 
     finally:
         # Stop V-REP simulation
-        vrep_sim.stop_sim(verbose=True)
-
-finally:
-    # Disconnect from V-REP
-    vrep_sim.disconnect(verbose=True)
+        vrep_sim.stop_sim()
 ```
