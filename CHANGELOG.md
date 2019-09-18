@@ -10,6 +10,8 @@ Changelog
   to V-REP remote API server.
 - Added communicating with V-REP remote API server using context manager via
   interface to V-REP remote API server.
+- Added indicator of whether connection to V-REP remote API server is
+  established to interface to V-REP remote API server.
 
 ### Changed
 

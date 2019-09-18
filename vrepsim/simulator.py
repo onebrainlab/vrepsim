@@ -75,6 +75,11 @@ class Simulator(object):
         return self._client_id
 
     @property
+    def connected(self):
+        """Connection to V-REP remote API server status."""
+        return self._client_id is not None
+
+    @property
     def cycle(self):
         """Interval between data exchanges with V-REP."""
         return self._cycle
