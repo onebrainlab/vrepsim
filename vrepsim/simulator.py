@@ -49,6 +49,14 @@ class Simulator(object):
         self.verbose = verbose
         self._client_id = None
 
+    def __del__(self):
+        # If connected to V-REP remote API server, disconnect, but without
+        # attempting to properly reset other variables; this is only a
+        # protective measure for the event when still connected to V-REP remote
+        # API server while quitting Python
+        if self._client_id is not None:
+            vrep.simxFinish(self._client_id)
+
     def __enter__(self):
         if self._client_id is None:
             self.connect()
