@@ -58,6 +58,11 @@ class SceneObject(Communicator):
                                "".format(self._name))
         return self._name if self._name != "_Unnamed_" else None
 
+    @property
+    def removed(self):
+        """Object removed status."""
+        return self._handle == -2
+
     @staticmethod
     def get_handle(scene_obj, name):
         """Retrieve object handle."""
