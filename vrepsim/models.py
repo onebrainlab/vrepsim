@@ -32,6 +32,9 @@ class Model(SceneObject):
             ('z_max', vrep.sim_objfloatparam_modelbbox_max_z)
             )
 
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve limits of {} bounding box: "
+                               "object removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -56,6 +59,9 @@ class Model(SceneObject):
 
     def remove(self):
         """Remove model from scene."""
+        if self._handle == -2:
+            raise RuntimeError("Could not remove {}: object already removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -65,8 +71,7 @@ class Model(SceneObject):
                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._name = "_Removed_"
-        self._handle = -1
+        self._handle = -2
 
 
 class PioneerBot(Model):

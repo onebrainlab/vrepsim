@@ -39,11 +39,23 @@ class SceneObject(Communicator):
     @property
     def handle(self):
         """Object handle."""
-        return self._handle if self._handle != -1 else None
+        if self._handle >= 0:
+            return self._handle
+        elif self._handle == -1:
+            return None
+        elif self._handle == -2:
+            raise RuntimeError("Could not retrieve handle to {}: object "
+                               "removed.".format(self._name))
+        else:
+            raise RuntimeError("Could not retrieve handle to {}: invalid "
+                               "handle.".format(self._name))
 
     @property
     def name(self):
         """Object name."""
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve name of {}: object removed."
+                               "".format(self._name))
         return self._name if self._name != "_Unnamed_" else None
 
     @staticmethod
@@ -77,6 +89,10 @@ class SceneObject(Communicator):
             raise ValueError("Script type is not supported.")
 
         # Call function from the script
+        if self._handle == -2:
+            raise RuntimeError("Could not call function {0} from {1} script "
+                               "associated with {2}: object removed."
+                               "".format(funcname, script_type, self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -95,6 +111,9 @@ class SceneObject(Communicator):
 
     def copy_paste(self):
         """Copy and paste object."""
+        if self._handle == -2:
+            raise RuntimeError("Could not copy and paste {}: object removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -118,6 +137,9 @@ class SceneObject(Communicator):
             ('z_max', vrep.sim_objfloatparam_objbbox_max_z)
             )
 
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve limits of {} bounding box: "
+                               "object removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -144,6 +166,9 @@ class SceneObject(Communicator):
         """Retrieve object orientation specified as Euler angles about x, y,
         and z axes of the reference frame, each angle between -pi and pi.
         """
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve orientation of {}: object "
+                               "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -162,6 +187,9 @@ class SceneObject(Communicator):
         """Set object orientation specified as Euler angles about x, y, and z
         axes of the reference frame, each angle between -pi and pi.
         """
+        if self._handle == -2:
+            raise RuntimeError("Could not set orientation of {}: object "
+                               "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -181,6 +209,9 @@ class SceneObject(Communicator):
 
     def get_parent_handle(self):
         """Retrieve handle to object parent."""
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve handle to the parent of "
+                               "{}: object removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -195,6 +226,9 @@ class SceneObject(Communicator):
 
     def set_parent(self, parent=None, keep_pos=True):
         """Set object parent."""
+        if self._handle == -2:
+            raise RuntimeError("Could not set parent of {}: object removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -208,6 +242,9 @@ class SceneObject(Communicator):
 
     def get_position(self, relative=None):
         """Retrieve object position."""
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve position of {}: object "
+                               "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -224,6 +261,9 @@ class SceneObject(Communicator):
 
     def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""
+        if self._handle == -2:
+            raise RuntimeError("Could not set position of {}: object removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -243,6 +283,9 @@ class SceneObject(Communicator):
 
     def remove(self):
         """Remove object from scene."""
+        if self._handle == -2:
+            raise RuntimeError("Could not remove {}: object already removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -252,8 +295,7 @@ class SceneObject(Communicator):
                                     vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._name = "_Removed_"
-        self._handle = -1
+        self._handle = -2
 
     def _get_handle(self):
         """Retrieve object handle."""
@@ -285,6 +327,9 @@ class Motor(SceneObject):
 
     def set_velocity(self, velocity):
         """Set motor velocity."""
+        if self._handle == -2:
+            raise RuntimeError("Could not set {} velocity: object removed."
+                               "".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -306,6 +351,9 @@ class ProximitySensor(SceneObject):
         """Retrieve distance to the detected point inverted such that smaller
         values correspond to further distances.
         """
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve data from {}: object "
+                               "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -334,6 +382,9 @@ class VisionSensor(SceneObject):
     def get_image(self, grayscale=False):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP
+        if self._handle == -2:
+            raise RuntimeError("Could not retrieve image from {}: object "
+                               "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
