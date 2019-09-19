@@ -77,6 +77,9 @@ class Collection(Communicator):
 
     def _get_handle(self):
         """Retrieve collection handle."""
+        if not self._name:
+            raise RuntimeError("Could not retrieve handle to _Unnamed_: "
+                               "missing name.")
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(

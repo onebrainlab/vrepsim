@@ -32,9 +32,14 @@ class Model(SceneObject):
             ('z_max', vrep.sim_objfloatparam_modelbbox_max_z)
             )
 
-        if self._handle == -2:
-            raise RuntimeError("Could not retrieve limits of {} bounding box: "
-                               "object removed.".format(self._name))
+        if self._handle < 0:
+            if self._handle == -1:
+                raise RuntimeError(
+                    "Could not retrieve limits of {} bounding box: missing "
+                    "name or handle.".format(self._name))
+            if self._handle == -2:
+                raise RuntimeError("Could not retrieve limits of {} bounding "
+                                   "box: object removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
@@ -59,9 +64,13 @@ class Model(SceneObject):
 
     def remove(self):
         """Remove model from scene."""
-        if self._handle == -2:
-            raise RuntimeError("Could not remove {}: object already removed."
-                               "".format(self._name))
+        if self._handle < 0:
+            if self._handle == -1:
+                raise RuntimeError("Could not remove {}: missing name or "
+                                   "handle.".format(self._name))
+            if self._handle == -2:
+                raise RuntimeError("Could not remove {}: object already "
+                                   "removed.".format(self._name))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
