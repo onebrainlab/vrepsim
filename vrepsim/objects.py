@@ -503,6 +503,9 @@ class MotorArray(object):
 
     def set_velocities(self, motor_velocities):
         """Set velocities for all motors."""
+        if not self._motors:
+            raise RuntimeError("Could not set velocities for array of motors: "
+                               "missing interfaces to motors.")
         for m, motor in enumerate(self._motors):
             motor.set_velocity(motor_velocities[m])
 

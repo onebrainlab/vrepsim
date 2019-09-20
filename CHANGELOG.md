@@ -24,6 +24,7 @@ Changelog
   connections is explicitly forbidden.
 - Changed handling errors when calling V-REP remote API functions.
 - Changed handling errors when retrieving data from array of sensors.
+- Changed handling errors when setting velocities for array of motors.
 
 0.3.0 - 2019-06-26
 ------------------
