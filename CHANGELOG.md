@@ -23,6 +23,7 @@ Changelog
   interface to V-REP remote API server such that establishing multiple
   connections is explicitly forbidden.
 - Changed handling errors when calling V-REP remote API functions.
+- Changed handling errors when retrieving data from array of sensors.
 
 0.3.0 - 2019-06-26
 ------------------

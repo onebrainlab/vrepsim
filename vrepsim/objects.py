@@ -543,4 +543,7 @@ class ProximitySensorArray(SensorArray):
         """Retrieve distances to the detected points by all sensors inverted
         such that smaller values correspond to further distances.
         """
+        if not self._sensors:
+            raise RuntimeError("Could not retrieve data from array of "
+                               "sensors: missing interfaces to sensors.")
         return [sensor.get_inv_distance() for sensor in self._sensors]
