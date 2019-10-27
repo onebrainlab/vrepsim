@@ -10,7 +10,8 @@ following models:
 
 import vrep
 
-from vrepsim.constants import VREP_FLOAT_PREC
+from vrepsim.constants import (MISSING_HANDLE, REMOVED_OBJ_HANDLE,
+                               VREP_FLOAT_PREC)
 from vrepsim.exceptions import ConnectionError, ServerError
 from vrepsim.objects import MotorArray, ProximitySensorArray, SceneObject
 
@@ -33,11 +34,11 @@ class Model(SceneObject):
             )
 
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError(
                     "Could not retrieve limits of {} bounding box: missing "
                     "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve limits of {} bounding "
                                    "box: object removed.".format(self._name))
         client_id = self.client_id
@@ -65,10 +66,10 @@ class Model(SceneObject):
     def remove(self):
         """Remove model from scene."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not remove {}: missing name or "
                                    "handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not remove {}: object already "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -80,7 +81,7 @@ class Model(SceneObject):
                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._handle = -2
+        self._handle = REMOVED_OBJ_HANDLE
 
 
 class PioneerBot(Model):

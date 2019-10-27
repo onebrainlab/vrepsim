@@ -20,7 +20,8 @@ It also provides interfaces to the following arrays of scene objects:
 import vrep
 
 from vrepsim.base import Communicator
-from vrepsim.constants import EMPTY_NAME, VREP_FLOAT_PREC
+from vrepsim.constants import (EMPTY_NAME, MISSING_HANDLE, REMOVED_OBJ_HANDLE,
+                               VREP_FLOAT_PREC)
 from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
 
 
@@ -34,16 +35,16 @@ class SceneObject(Communicator):
             self._handle = self._get_handle()
         else:
             self._name = EMPTY_NAME
-            self._handle = -1
+            self._handle = MISSING_HANDLE
 
     @property
     def handle(self):
         """Object handle."""
         if self._handle >= 0:
             return self._handle
-        elif self._handle == -1:
+        elif self._handle == MISSING_HANDLE:
             return None
-        elif self._handle == -2:
+        elif self._handle == REMOVED_OBJ_HANDLE:
             raise RuntimeError("Could not retrieve handle to {}: object "
                                "removed.".format(self._name))
         else:
@@ -53,7 +54,7 @@ class SceneObject(Communicator):
     @property
     def name(self):
         """Object name."""
-        if self._handle == -2:
+        if self._handle == REMOVED_OBJ_HANDLE:
             raise RuntimeError("Could not retrieve name of {}: object removed."
                                "".format(self._name))
         return self._name if self._name != EMPTY_NAME else None
@@ -61,7 +62,7 @@ class SceneObject(Communicator):
     @property
     def removed(self):
         """Object removed status."""
-        return self._handle == -2
+        return self._handle == REMOVED_OBJ_HANDLE
 
     @staticmethod
     def get_handle(scene_obj, name):
@@ -94,7 +95,7 @@ class SceneObject(Communicator):
             raise ValueError("Script type is not supported.")
 
         # Call function from the script
-        if self._handle == -2:
+        if self._handle == REMOVED_OBJ_HANDLE:
             raise RuntimeError("Could not call function {0} from {1} script "
                                "associated with {2}: object removed."
                                "".format(funcname, script_type, self._name))
@@ -121,10 +122,10 @@ class SceneObject(Communicator):
     def copy_paste(self):
         """Copy and paste object."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not copy and paste {}: missing name "
                                    "or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not copy and paste {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -151,11 +152,11 @@ class SceneObject(Communicator):
             )
 
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError(
                     "Could not retrieve limits of {} bounding box: missing "
                     "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve limits of {} bounding "
                                    "box: object removed.".format(self._name))
         client_id = self.client_id
@@ -185,11 +186,11 @@ class SceneObject(Communicator):
         and z axes of the reference frame, each angle between -pi and pi.
         """
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError(
                     "Could not retrieve orientation of {}: missing name or "
                     "handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve orientation of {}: "
                                    "object removed.".format(self._name))
         client_id = self.client_id
@@ -211,10 +212,10 @@ class SceneObject(Communicator):
         axes of the reference frame, each angle between -pi and pi.
         """
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not set orientation of {}: missing "
                                    "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not set orientation of {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -237,11 +238,11 @@ class SceneObject(Communicator):
     def get_parent_handle(self):
         """Retrieve handle to object parent."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError(
                     "Could not retrieve handle to the parent of {}: missing "
                     "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve handle to the parent "
                                    "of {}: object removed.".format(self._name))
         client_id = self.client_id
@@ -259,10 +260,10 @@ class SceneObject(Communicator):
     def set_parent(self, parent=None, keep_pos=True):
         """Set object parent."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not set parent of {}: missing name "
                                    "or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not set parent of {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -279,11 +280,11 @@ class SceneObject(Communicator):
     def get_position(self, relative=None):
         """Retrieve object position."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError(
                     "Could not retrieve position of {}: missing name or "
                     "handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve position of {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -303,10 +304,10 @@ class SceneObject(Communicator):
     def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not set position of {}: missing "
                                    "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not set position of {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -329,10 +330,10 @@ class SceneObject(Communicator):
     def remove(self):
         """Remove object from scene."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not remove {}: missing name or "
                                    "handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not remove {}: object already "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -344,7 +345,7 @@ class SceneObject(Communicator):
                                     vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._handle = -2
+        self._handle = REMOVED_OBJ_HANDLE
 
     def _get_handle(self):
         """Retrieve object handle."""
@@ -380,10 +381,10 @@ class Motor(SceneObject):
     def set_velocity(self, velocity):
         """Set motor velocity."""
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not set {} velocity: missing name "
                                    "or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not set {} velocity: object removed."
                                    "".format(self._name))
         client_id = self.client_id
@@ -408,10 +409,10 @@ class ProximitySensor(SceneObject):
         values correspond to further distances.
         """
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not retrieve data from {}: missing "
                                    "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve data from {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
@@ -443,10 +444,10 @@ class VisionSensor(SceneObject):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP
         if self._handle < 0:
-            if self._handle == -1:
+            if self._handle == MISSING_HANDLE:
                 raise RuntimeError("Could not retrieve image from {}: missing "
                                    "name or handle.".format(self._name))
-            if self._handle == -2:
+            if self._handle == REMOVED_OBJ_HANDLE:
                 raise RuntimeError("Could not retrieve image from {}: object "
                                    "removed.".format(self._name))
         client_id = self.client_id
