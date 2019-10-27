@@ -20,7 +20,7 @@ It also provides interfaces to the following arrays of scene objects:
 import vrep
 
 from vrepsim.base import Communicator
-from vrepsim.constants import VREP_FLOAT_PREC
+from vrepsim.constants import EMPTY_NAME, VREP_FLOAT_PREC
 from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
 
 
@@ -33,7 +33,7 @@ class SceneObject(Communicator):
             self._name = name
             self._handle = self._get_handle()
         else:
-            self._name = "_Unnamed_"
+            self._name = EMPTY_NAME
             self._handle = -1
 
     @property
@@ -56,7 +56,7 @@ class SceneObject(Communicator):
         if self._handle == -2:
             raise RuntimeError("Could not retrieve name of {}: object removed."
                                "".format(self._name))
-        return self._name if self._name != "_Unnamed_" else None
+        return self._name if self._name != EMPTY_NAME else None
 
     @property
     def removed(self):
@@ -98,7 +98,7 @@ class SceneObject(Communicator):
             raise RuntimeError("Could not call function {0} from {1} script "
                                "associated with {2}: object removed."
                                "".format(funcname, script_type, self._name))
-        if self._name == "_Unnamed_":
+        if self._name == EMPTY_NAME:
             raise RuntimeError(
                 "Could not call function {0} from {1} script associated with "
                 "{2}: missing name.".format(funcname, script_type, self._name))
@@ -348,7 +348,7 @@ class SceneObject(Communicator):
 
     def _get_handle(self):
         """Retrieve object handle."""
-        if self._name == "_Unnamed_":
+        if self._name == EMPTY_NAME:
             raise RuntimeError("Could not retrieve handle to {}: missing name."
                                "".format(self._name))
         client_id = self.client_id

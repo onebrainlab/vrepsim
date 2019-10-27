@@ -8,6 +8,7 @@ collection of scene objects simulated in V-REP.
 import vrep
 
 from vrepsim.base import Communicator
+from vrepsim.constants import EMPTY_NAME
 from vrepsim.exceptions import ConnectionError, ServerError
 
 
@@ -78,8 +79,8 @@ class Collection(Communicator):
     def _get_handle(self):
         """Retrieve collection handle."""
         if not self._name:
-            raise RuntimeError("Could not retrieve handle to _Unnamed_: "
-                               "missing name.")
+            raise RuntimeError("Could not retrieve handle to {}: missing name."
+                               "".format(EMPTY_NAME))
         client_id = self.client_id
         if client_id is None:
             raise ConnectionError(
