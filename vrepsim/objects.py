@@ -15,6 +15,10 @@ It also provides interfaces to the following arrays of scene objects:
 - array of motors;
 - array of generic sensors;
 - array of proximity sensors.
+
+It also provides the following functionality:
+
+- retrieving handle to scene object from various types.
 """
 
 import vrep
@@ -23,6 +27,29 @@ from vrepsim.base import Communicator
 from vrepsim.constants import (EMPTY_NAME, MISSING_HANDLE, REMOVED_OBJ_HANDLE,
                                VREP_FLOAT_PREC)
 from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
+
+
+def to_handle(obj, name):
+    """Retrieve handle to scene object from various types."""
+    if obj is None:
+        return -1
+    elif isinstance(obj, int):
+        if obj >= 0:
+            return obj
+        else:
+            raise ValueError("Handle to {} is invalid.".format(name))
+    elif isinstance(obj, SceneObject):
+        if obj.removed:
+            raise RuntimeError("Could not retrieve handle to {}: object "
+                               "removed.".format(name))
+        elif obj.handle is None:
+            raise RuntimeError("Could not retrieve handle to {}: missing "
+                               "handle.".format(name))
+        else:
+            return obj.handle
+    else:
+        raise TypeError("Could not retrieve handle to {}: type not supported."
+                        "".format(name))
 
 
 class SceneObject(Communicator):
@@ -63,21 +90,6 @@ class SceneObject(Communicator):
     def removed(self):
         """Object removed status."""
         return self._handle == REMOVED_OBJ_HANDLE
-
-    @staticmethod
-    def get_handle(scene_obj, name):
-        """Retrieve object handle."""
-        if scene_obj is None:
-            return -1
-        elif isinstance(scene_obj, int):
-            return scene_obj
-        elif isinstance(scene_obj, SceneObject):
-            handle = scene_obj.handle
-            if handle is None:
-                raise ValueError("Handle of {} is invalid.".format(name))
-            return handle
-        else:
-            raise TypeError("Type of {} is not supported.".format(name))
 
     def call_script_func(self, funcname, script_type='customization',
                          args_int=[], args_float=[], args_string=[],
@@ -198,7 +210,7 @@ class SceneObject(Communicator):
             raise ConnectionError(
                 "Could not retrieve orientation of {}: not connected to V-REP "
                 "remote API server.".format(self._name))
-        relative_handle = SceneObject.get_handle(relative, "relative")
+        relative_handle = to_handle(relative, "relative")
         res, orientation = vrep.simxGetObjectOrientation(
             client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
@@ -227,7 +239,7 @@ class SceneObject(Communicator):
             raise SimulationError(
                 "Could not set orientation of {}: setting orientation not "
                 "allowed during simulation.".format(self._name))
-        relative_handle = SceneObject.get_handle(relative, "relative")
+        relative_handle = to_handle(relative, "relative")
         res = vrep.simxSetObjectOrientation(
             client_id, self._handle, relative_handle, orientation,
             vrep.simx_opmode_blocking)
@@ -271,7 +283,7 @@ class SceneObject(Communicator):
             raise ConnectionError(
                 "Could not set parent of {}: not connected to V-REP remote "
                 "API server.".format(self._name))
-        parent_handle = SceneObject.get_handle(parent, "parent")
+        parent_handle = to_handle(parent, "parent")
         res = vrep.simxSetObjectParent(client_id, self._handle, parent_handle,
                                        keep_pos, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
@@ -292,7 +304,7 @@ class SceneObject(Communicator):
             raise ConnectionError(
                 "Could not retrieve position of {}: not connected to V-REP "
                 "remote API server.".format(self._name))
-        relative_handle = SceneObject.get_handle(relative, "relative")
+        relative_handle = to_handle(relative, "relative")
         res, position = vrep.simxGetObjectPosition(
             client_id, self._handle, relative_handle,
             vrep.simx_opmode_blocking)
@@ -319,7 +331,7 @@ class SceneObject(Communicator):
             raise SimulationError(
                 "Could not set position of {}: setting position not allowed "
                 "during simulation.".format(self._name))
-        relative_handle = SceneObject.get_handle(relative, "relative")
+        relative_handle = to_handle(relative, "relative")
         res = vrep.simxSetObjectPosition(
             client_id, self._handle, relative_handle, position,
             vrep.simx_opmode_blocking)

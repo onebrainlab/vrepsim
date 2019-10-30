@@ -25,6 +25,8 @@ Changelog
 - Changed handling errors when calling V-REP remote API functions.
 - Changed handling errors when retrieving data from array of sensors.
 - Changed handling errors when setting velocities for array of motors.
+- Changed retrieving handle to scene object from various types via interface to
+  scene objects simulated in V-REP.
 
 0.3.0 - 2019-06-26
 ------------------
