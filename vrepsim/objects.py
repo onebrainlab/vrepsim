@@ -346,6 +346,16 @@ class SceneObject(Communicator):
             raise TypeError("Could not register child: type not supported.")
         self._children.add(child)
 
+    def unregister_child(self, child):
+        """Unregister object's child object."""
+        if not isinstance(child, SceneObject):
+            raise TypeError("Could not unregister child: type not supported.")
+        try:
+            self._children.remove(child)
+        except KeyError:
+            raise ValueError("Could not unregister child: child not "
+                             "registered.")
+
     def remove(self):
         """Remove object from scene."""
         if self._handle < 0:
