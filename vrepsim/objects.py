@@ -63,6 +63,7 @@ class SceneObject(Communicator):
         else:
             self._name = EMPTY_NAME
             self._handle = MISSING_HANDLE
+        self._children = set()
 
     @property
     def handle(self):
@@ -338,6 +339,12 @@ class SceneObject(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not set position of {}.".format(self._name))
+
+    def register_child(self, child):
+        """Register object's child object."""
+        if not isinstance(child, SceneObject):
+            raise TypeError("Could not register child: type not supported.")
+        self._children.add(child)
 
     def remove(self):
         """Remove object from scene."""
