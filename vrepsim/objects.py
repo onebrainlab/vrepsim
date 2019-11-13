@@ -354,6 +354,32 @@ class SceneObject(Communicator):
             raise ServerError(
                 "Could not set position of {}.".format(self._name))
 
+    def set_removed(self, recursive=False):
+        """Set object removed status."""
+        self._handle = REMOVED_OBJ_HANDLE
+        if recursive:
+            if self._parent is not None:
+                self._parent = None
+            for child in self._children:
+                child.set_removed(recursive)
+        else:
+            if self._parent is not None:
+                for child in self._children:
+                    self._parent.register_child(child)
+                    child.register_parent(self._parent)
+                try:
+                    self._parent.unregister_child(self)
+                except ValueError:
+                    pass
+                self._parent = None
+            else:
+                for child in self._children:
+                    try:
+                        child.unregister_parent()
+                    except RuntimeError:
+                        pass
+        self._children.clear()
+
     def register_child(self, child):
         """Register object's child object."""
         if not isinstance(child, SceneObject):
@@ -401,7 +427,7 @@ class SceneObject(Communicator):
                                     vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._handle = REMOVED_OBJ_HANDLE
+        self.set_removed()
 
     def _get_handle(self):
         """Retrieve object handle."""

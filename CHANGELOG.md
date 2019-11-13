@@ -30,6 +30,13 @@ Changelog
 - Changed retrieving handle to scene object from various types via interface to
   scene objects simulated in V-REP.
 
+### Fixed
+
+- Fixed removing object from scene via interface to a generic scene object
+  simulated in V-REP.
+- Fixed removing model from scene via interface to a generic model simulated in
+  V-REP.
+
 0.3.0 - 2019-06-26
 ------------------
 

@@ -63,6 +63,20 @@ class Model(SceneObject):
                        in zip(bbox_limits[::2], bbox_limits[1::2])]
         return bbox_limits
 
+    def set_removed(self, recursive=False):
+        """Set model removed status."""
+        self._handle = REMOVED_OBJ_HANDLE
+        if self._parent is not None:
+            if not recursive:
+                try:
+                    self._parent.unregister_child(self)
+                except ValueError:
+                    pass
+            self._parent = None
+        for child in self._children:
+            child.set_removed(recursive=True)
+        self._children.clear()
+
     def remove(self):
         """Remove model from scene."""
         if self._handle < 0:
@@ -81,7 +95,7 @@ class Model(SceneObject):
                                    vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not remove {}.".format(self._name))
-        self._handle = REMOVED_OBJ_HANDLE
+        self.set_removed()
 
 
 class PioneerBot(Model):
