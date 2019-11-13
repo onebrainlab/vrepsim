@@ -19,6 +19,8 @@ Changelog
 
 - Changed hierarchy of classes that communicate with V-REP simulator.
 - Changed arguments for interface to V-REP remote API server.
+- Changed arguments for interfaces to scene objects and models simulated in
+  V-REP.
 - Changed connecting to and disconnecting from V-REP remote API server via
   interface to V-REP remote API server such that establishing multiple
   connections is explicitly forbidden.

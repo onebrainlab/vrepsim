@@ -55,7 +55,7 @@ def to_handle(obj, name):
 class SceneObject(Communicator):
     """Interface to a generic scene object simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
+    def __init__(self, name, parent=None, vrep_sim=None):
         super(SceneObject, self).__init__(vrep_sim)
         if name:
             self._name = name
@@ -64,6 +64,14 @@ class SceneObject(Communicator):
             self._name = EMPTY_NAME
             self._handle = MISSING_HANDLE
         self._children = set()
+        if parent is not None:
+            if isinstance(parent, SceneObject):
+                parent.register_child(self)
+                self._parent = parent
+            else:
+                raise TypeError("Type of parent is not supported.")
+        else:
+            self._parent = None
 
     @property
     def handle(self):
@@ -289,6 +297,12 @@ class SceneObject(Communicator):
                                        keep_pos, vrep.simx_opmode_blocking)
         if res != vrep.simx_return_ok:
             raise ServerError("Could not set parent of {}.".format(self._name))
+        if self._parent is not None:
+            self._parent.unregister_child(self)
+            self._parent = None
+        if isinstance(parent, SceneObject):
+            parent.register_child(self)
+            self._parent = parent
 
     def get_position(self, relative=None):
         """Retrieve object position."""
@@ -397,15 +411,15 @@ class SceneObject(Communicator):
 class Dummy(SceneObject):
     """Interface to dummy object simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
-        super(Dummy, self).__init__(name, vrep_sim)
+    def __init__(self, name, parent=None, vrep_sim=None):
+        super(Dummy, self).__init__(name, parent, vrep_sim)
 
 
 class Motor(SceneObject):
     """Interface to motor (motorized joint) simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
-        super(Motor, self).__init__(name, vrep_sim)
+    def __init__(self, name, parent=None, vrep_sim=None):
+        super(Motor, self).__init__(name, parent, vrep_sim)
 
     def set_velocity(self, velocity):
         """Set motor velocity."""
@@ -430,8 +444,8 @@ class Motor(SceneObject):
 class ProximitySensor(SceneObject):
     """Interface to proximity sensor simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
-        super(ProximitySensor, self).__init__(name, vrep_sim)
+    def __init__(self, name, parent=None, vrep_sim=None):
+        super(ProximitySensor, self).__init__(name, parent, vrep_sim)
 
     def get_inv_distance(self):
         """Retrieve distance to the detected point inverted such that smaller
@@ -466,8 +480,8 @@ class ProximitySensor(SceneObject):
 class VisionSensor(SceneObject):
     """Interface to vision sensor simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
-        super(VisionSensor, self).__init__(name, vrep_sim)
+    def __init__(self, name, parent=None, vrep_sim=None):
+        super(VisionSensor, self).__init__(name, parent, vrep_sim)
 
     def get_image(self, grayscale=False):
         """Retrieve image."""
@@ -509,9 +523,10 @@ class VisionSensor(SceneObject):
 class MotorArray(object):
     """Interface to an array of motors simulated in V-REP."""
 
-    def __init__(self, motor_names, vrep_sim=None):
+    def __init__(self, motor_names, parent=None, vrep_sim=None):
         if motor_names:
-            self._motors = [Motor(name, vrep_sim) for name in motor_names]
+            self._motors = [Motor(name, parent, vrep_sim)
+                            for name in motor_names]
         else:
             self._motors = []
 
@@ -566,10 +581,10 @@ class SensorArray(object):
 class ProximitySensorArray(SensorArray):
     """Interface to an array of proximity sensors simulated in V-REP."""
 
-    def __init__(self, sensor_names, vrep_sim=None):
+    def __init__(self, sensor_names, parent=None, vrep_sim=None):
         super(ProximitySensorArray, self).__init__()
         if sensor_names:
-            self._sensors = [ProximitySensor(name, vrep_sim)
+            self._sensors = [ProximitySensor(name, parent, vrep_sim)
                              for name in sensor_names]
 
     def get_inv_distances(self):

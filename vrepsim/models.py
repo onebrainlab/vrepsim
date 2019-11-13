@@ -19,8 +19,8 @@ from vrepsim.objects import MotorArray, ProximitySensorArray, SceneObject
 class Model(SceneObject):
     """Interface to a generic model simulated in V-REP."""
 
-    def __init__(self, name, vrep_sim=None):
-        super(Model, self).__init__(name, vrep_sim)
+    def __init__(self, name, parent=None, vrep_sim=None):
+        super(Model, self).__init__(name, parent, vrep_sim)
 
     def get_bbox_limits(self, prec=VREP_FLOAT_PREC):
         """Retrieve limits of model bounding box."""
@@ -87,7 +87,8 @@ class Model(SceneObject):
 class PioneerBot(Model):
     """Interface to Pioneer P3-DX robot simulated in V-REP."""
 
-    def __init__(self, name, us_sensor_names, motor_names, vrep_sim=None):
-        super(PioneerBot, self).__init__(name, vrep_sim)
-        self.us_sensors = ProximitySensorArray(us_sensor_names, vrep_sim)
-        self.wheels = MotorArray(motor_names, vrep_sim)
+    def __init__(self, name, us_sensor_names, motor_names, parent=None,
+                 vrep_sim=None):
+        super(PioneerBot, self).__init__(name, parent, vrep_sim)
+        self.us_sensors = ProximitySensorArray(us_sensor_names, self, vrep_sim)
+        self.wheels = MotorArray(motor_names, self, vrep_sim)
