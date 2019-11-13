@@ -376,6 +376,13 @@ class SceneObject(Communicator):
             raise TypeError("Could not register parent: type not supported.")
         self._parent = parent
 
+    def unregister_parent(self):
+        """Unregister object's parent object."""
+        if self._parent is None:
+            raise RuntimeError("Could not unregister parent: no parent "
+                               "registered.")
+        self._parent = None
+
     def remove(self):
         """Remove object from scene."""
         if self._handle < 0:
