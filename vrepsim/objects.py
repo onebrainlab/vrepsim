@@ -522,6 +522,35 @@ class VisionSensor(SceneObject):
     def __init__(self, name, parent=None, vrep_sim=None):
         super(VisionSensor, self).__init__(name, parent, vrep_sim)
 
+    def get_depth_buffer(self):
+        """Retrieve depth buffer."""
+        # Retrieve depth buffer from the vision sensor simulated in V-REP
+        if self._handle < 0:
+            if self._handle == MISSING_HANDLE:
+                raise RuntimeError(
+                    "Could not retrieve depth buffer from {}: missing name or "
+                    "handle.".format(self._name))
+            if self._handle == REMOVED_OBJ_HANDLE:
+                raise RuntimeError("Could not retrieve depth buffer from {}: "
+                                   "object removed.".format(self._name))
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve depth buffer from {}: not connected to "
+                "V-REP remote API server.".format(self._name))
+        res, resolution, buffer = vrep.simxGetVisionSensorDepthBuffer(
+            client_id, self._handle, vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError(
+                "Could not retrieve depth buffer from {}.".format(self._name))
+
+        # Arrange pixels in rows, reversing from bottom up to top down order
+        width, height = resolution
+        buffer = [buffer[p:p+width]
+                  for p in reversed(range(0, width * height, width))]
+
+        return buffer
+
     def get_image(self, grayscale=False):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP
