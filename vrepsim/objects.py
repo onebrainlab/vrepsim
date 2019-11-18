@@ -551,6 +551,35 @@ class VisionSensor(SceneObject):
 
         return buffer
 
+    def get_far_clip_plane(self, prec=VREP_FLOAT_PREC):
+        """Retrieve far clipping plane."""
+        if self._handle < 0:
+            if self._handle == MISSING_HANDLE:
+                raise RuntimeError(
+                    "Could not retrieve far clipping plane of {}: missing "
+                    "name or handle.".format(self._name))
+            if self._handle == REMOVED_OBJ_HANDLE:
+                raise RuntimeError(
+                    "Could not retrieve far clipping plane of {}: object "
+                    "removed.".format(self._name))
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve far clipping plane of {}: not connected "
+                "to V-REP remote API server.".format(self._name))
+        res, clip_plane = vrep.simxGetObjectFloatParameter(
+            client_id, self._handle, vrep.sim_visionfloatparam_far_clipping,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve far clipping plane of {}."
+                              "".format(self._name))
+        if prec is not None:
+            clip_plane = round(clip_plane, prec)  # far clipping plane may be
+                                                  # slightly imprecise (about
+                                                  # the 10th digit after the
+                                                  # decimal point)
+        return clip_plane
+
     def get_image(self, grayscale=False):
         """Retrieve image."""
         # Retrieve image from the vision sensor simulated in V-REP

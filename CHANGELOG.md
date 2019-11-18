@@ -20,6 +20,8 @@ Changelog
   sensor simulated in V-REP.
 - Added setting vision sensor near clipping plane via interface to vision
   sensor simulated in V-REP.
+- Added retrieving vision sensor far clipping plane via interface to vision
+  sensor simulated in V-REP.
 
 ### Changed
 
