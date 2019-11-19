@@ -689,6 +689,35 @@ class VisionSensor(SceneObject):
             raise ServerError("Could not set near clipping plane of {}."
                               "".format(self._name))
 
+    def get_resolution(self):
+        """Retrieve resolution."""
+        if self._handle < 0:
+            if self._handle == MISSING_HANDLE:
+                raise RuntimeError(
+                    "Could not retrieve resolution of {}: missing name or "
+                    "handle.".format(self._name))
+            if self._handle == REMOVED_OBJ_HANDLE:
+                raise RuntimeError("Could not retrieve resolution of {}: "
+                                   "object removed.".format(self._name))
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve resolution of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
+        res, resolution_x = vrep.simxGetObjectIntParameter(
+            client_id, self._handle, vrep.sim_visionintparam_resolution_x,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve resolution of {}."
+                              "".format(self._name))
+        res, resolution_y = vrep.simxGetObjectIntParameter(
+            client_id, self._handle, vrep.sim_visionintparam_resolution_y,
+            vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not retrieve resolution of {}."
+                              "".format(self._name))
+        return resolution_x, resolution_y
+
 
 class MotorArray(object):
     """Interface to an array of motors simulated in V-REP."""
