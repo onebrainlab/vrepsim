@@ -718,6 +718,33 @@ class VisionSensor(SceneObject):
                               "".format(self._name))
         return resolution_x, resolution_y
 
+    def set_resolution(self, resolution):
+        """Set resolution."""
+        if self._handle < 0:
+            if self._handle == MISSING_HANDLE:
+                raise RuntimeError("Could not set resolution of {}: missing "
+                                   "name or handle.".format(self._name))
+            if self._handle == REMOVED_OBJ_HANDLE:
+                raise RuntimeError("Could not set resolution of {}: object "
+                                   "removed.".format(self._name))
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not set resolution of {}: not connected to V-REP "
+                "remote API server.".format(self._name))
+        res = vrep.simxSetObjectIntParameter(
+            client_id, self._handle, vrep.sim_visionintparam_resolution_x,
+            resolution[0], vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not set resolution of {}."
+                              "".format(self._name))
+        res = vrep.simxSetObjectIntParameter(
+            client_id, self._handle, vrep.sim_visionintparam_resolution_y,
+            resolution[1], vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not set resolution of {}."
+                              "".format(self._name))
+
 
 class MotorArray(object):
     """Interface to an array of motors simulated in V-REP."""

@@ -18,6 +18,8 @@ Changelog
   simulated in V-REP.
 - Added retrieving vision sensor resolution via interface to vision sensor
   simulated in V-REP.
+- Added setting vision sensor resolution via interface to vision sensor
+  simulated in V-REP.
 - Added retrieving vision sensor near clipping plane via interface to vision
   sensor simulated in V-REP.
 - Added setting vision sensor near clipping plane via interface to vision
