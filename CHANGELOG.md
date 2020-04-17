@@ -14,6 +14,8 @@ Changelog
   established to interface to V-REP remote API server.
 - Added indicator of whether scene object has been removed to interface to a
   generic scene object simulated in V-REP.
+- Added retrieving distance to detected point from proximity sensor via
+  interface to proximity sensor simulated in V-REP.
 - Added retrieving vision sensor depth buffer via interface to vision sensor
   simulated in V-REP.
 - Added retrieving vision sensor resolution via interface to vision sensor

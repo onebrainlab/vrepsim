@@ -21,6 +21,8 @@ It also provides the following functionality:
 - retrieving handle to scene object from various types.
 """
 
+import math
+
 import vrep
 
 from vrepsim.base import Communicator
@@ -485,6 +487,36 @@ class ProximitySensor(SceneObject):
 
     def __init__(self, name, parent=None, vrep_sim=None):
         super(ProximitySensor, self).__init__(name, parent, vrep_sim)
+
+    def get_distance(self, fast=True):
+        """Retrieve distance to the detected point."""
+        if self._handle < 0:
+            if self._handle == MISSING_HANDLE:
+                raise RuntimeError("Could not retrieve data from {}: missing "
+                                   "name or handle.".format(self._name))
+            if self._handle == REMOVED_OBJ_HANDLE:
+                raise RuntimeError("Could not retrieve data from {}: object "
+                                   "removed.".format(self._name))
+        client_id = self.client_id
+        if client_id is None:
+            raise ConnectionError(
+                "Could not retrieve data from {}: not connected to V-REP "
+                "remote API server.".format(self._name))
+        res, detect, point, _, _ = vrep.simxReadProximitySensor(
+            client_id, self._handle, vrep.simx_opmode_blocking)
+        if res == vrep.simx_return_ok:
+            if detect:
+                if fast:
+                    return point[2]
+                else:
+                    return math.sqrt(sum(coord * coord for coord in point))
+            else:
+                return None
+        elif res == vrep.simx_return_novalue_flag:
+            return None
+        else:
+            raise ServerError(
+                "Could not retrieve data from {}.".format(self._name))
 
     def get_inv_distance(self):
         """Retrieve distance to the detected point inverted such that smaller
