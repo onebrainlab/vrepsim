@@ -16,6 +16,8 @@ Changelog
   generic scene object simulated in V-REP.
 - Added retrieving distance to detected point from proximity sensor via
   interface to proximity sensor simulated in V-REP.
+- Added retrieving distances to detected points by all sensors via interface to
+  an array of proximity sensors simulated in V-REP.
 - Added retrieving vision sensor depth buffer via interface to vision sensor
   simulated in V-REP.
 - Added retrieving vision sensor resolution via interface to vision sensor

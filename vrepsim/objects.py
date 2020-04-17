@@ -845,6 +845,13 @@ class ProximitySensorArray(SensorArray):
             self._sensors = [ProximitySensor(name, parent, vrep_sim)
                              for name in sensor_names]
 
+    def get_distances(self, fast=True):
+        """Retrieve distances to the detected points by all sensors."""
+        if not self._sensors:
+            raise RuntimeError("Could not retrieve data from array of "
+                               "sensors: missing interfaces to sensors.")
+        return [sensor.get_distance(fast=fast) for sensor in self._sensors]
+
     def get_inv_distances(self):
         """Retrieve distances to the detected points by all sensors inverted
         such that smaller values correspond to further distances.
