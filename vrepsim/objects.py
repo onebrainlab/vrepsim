@@ -518,35 +518,6 @@ class ProximitySensor(SceneObject):
             raise ServerError(
                 "Could not retrieve data from {}.".format(self._name))
 
-    def get_inv_distance(self):
-        """Retrieve distance to the detected point inverted such that smaller
-        values correspond to further distances.
-        """
-        if self._handle < 0:
-            if self._handle == MISSING_HANDLE:
-                raise RuntimeError("Could not retrieve data from {}: missing "
-                                   "name or handle.".format(self._name))
-            if self._handle == REMOVED_OBJ_HANDLE:
-                raise RuntimeError("Could not retrieve data from {}: object "
-                                   "removed.".format(self._name))
-        client_id = self.client_id
-        if client_id is None:
-            raise ConnectionError(
-                "Could not retrieve data from {}: not connected to V-REP "
-                "remote API server.".format(self._name))
-        res, detect, point, _, _ = vrep.simxReadProximitySensor(
-            client_id, self._handle, vrep.simx_opmode_blocking)
-        if res == vrep.simx_return_ok:
-            if detect:
-                return 1.0 - point[2]  # distance inverted
-            else:
-                return 0.0
-        elif res == vrep.simx_return_novalue_flag:
-            return 0.0
-        else:
-            raise ServerError(
-                "Could not retrieve data from {}.".format(self._name))
-
 
 class VisionSensor(SceneObject):
     """Interface to vision sensor simulated in V-REP."""
@@ -851,12 +822,3 @@ class ProximitySensorArray(SensorArray):
             raise RuntimeError("Could not retrieve data from array of "
                                "sensors: missing interfaces to sensors.")
         return [sensor.get_distance(fast=fast) for sensor in self._sensors]
-
-    def get_inv_distances(self):
-        """Retrieve distances to the detected points by all sensors inverted
-        such that smaller values correspond to further distances.
-        """
-        if not self._sensors:
-            raise RuntimeError("Could not retrieve data from array of "
-                               "sensors: missing interfaces to sensors.")
-        return [sensor.get_inv_distance() for sensor in self._sensors]

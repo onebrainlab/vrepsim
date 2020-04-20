@@ -55,6 +55,15 @@ Changelog
 - Fixed removing model from scene via interface to a generic model simulated in
   V-REP.
 
+### Removed
+
+- Removed retrieving distance to detected point inverted such that smaller
+  values correspond to further distances from interface to proximity sensor
+  simulated in V-REP.
+- Removed retrieving distances to detected points by all sensors inverted such
+  that smaller values correspond to further distances from interface to an
+  array of proximity sensors simulated in V-REP.
+
 0.3.0 - 2019-06-26
 ------------------
 
