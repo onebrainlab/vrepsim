@@ -8,6 +8,7 @@ Interface to V-REP remote API server provides the following functionality:
 - retrieving default interface to V-REP remote API server;
 - retrieving V-REP version;
 - retrieving dynamics engine name;
+- loading scene from file;
 - retrieving scene path;
 - starting a V-REP simulation in synchronous operation mode;
 - stopping a V-REP simulation;
@@ -292,6 +293,22 @@ class Simulator(object):
 
         # Determine whether V-REP simulation is started
         return server_state & SIM_NOT_STOPPED
+
+    def load_scene(self, filename, server_side=True):
+        """Load scene from file."""
+        SERVER_SIDE = 0x00
+        CLIENT_SIDE = 0x01
+
+        if self._client_id is None:
+            raise ConnectionError(
+                "Could not load scene from file {}: not connected to V-REP "
+                "remote API server.".format(filename))
+        side = SERVER_SIDE if server_side else CLIENT_SIDE
+        res = vrep.simxLoadScene(self._client_id, filename, side,
+                                 vrep.simx_opmode_blocking)
+        if res != vrep.simx_return_ok:
+            raise ServerError("Could not load scene from file {}."
+                              "".format(filename))
 
     def start_sim(self, verbose=None):
         """Start V-REP simulation in synchronous operation mode."""

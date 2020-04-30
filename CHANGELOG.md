@@ -12,6 +12,7 @@ Changelog
   interface to V-REP remote API server.
 - Added indicator of whether connection to V-REP remote API server is
   established to interface to V-REP remote API server.
+- Added loading scene from file via interface to V-REP remote API server.
 - Added indicator of whether scene object has been removed to interface to a
   generic scene object simulated in V-REP.
 - Added retrieving distance to detected point from proximity sensor via
