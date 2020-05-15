@@ -26,8 +26,7 @@ import math
 import vrep
 
 from vrepsim.base import Communicator
-from vrepsim.constants import (EMPTY_NAME, MISSING_HANDLE, REMOVED_OBJ_HANDLE,
-                               VREP_FLOAT_PREC)
+from vrepsim.constants import EMPTY_NAME, MISSING_HANDLE, REMOVED_OBJ_HANDLE
 from vrepsim.exceptions import ConnectionError, ServerError, SimulationError
 
 
@@ -163,7 +162,7 @@ class SceneObject(Communicator):
                 "Could not copy and paste {}.".format(self._name))
         return handles[0]
 
-    def get_bbox_limits(self, prec=VREP_FLOAT_PREC):
+    def get_bbox_limits(self, prec=None):
         """Retrieve limits of object bounding box."""
         BBOX_LIMITS = (
             ('x_min', vrep.sim_objfloatparam_objbbox_min_x),
@@ -195,9 +194,9 @@ class SceneObject(Communicator):
                 raise ServerError("Could not retrieve {0} limit of {1} "
                                   "bounding box.".format(limit[0], self._name))
             if prec is not None:
-                lim = round(lim, prec)  # limit may be slightly imprecise
-                                        # (about the 6th digit after the
-                                        # decimal point)
+                lim = round(lim, prec)  # limit may be slightly imprecise due
+                                        # to the use of single-precision
+                                        # floating-point format by V-REP
             bbox_limits.append(lim)
         bbox_limits = [[min_lim, max_lim]
                        for min_lim, max_lim
@@ -554,7 +553,7 @@ class VisionSensor(SceneObject):
 
         return buffer
 
-    def get_far_clip_plane(self, prec=VREP_FLOAT_PREC):
+    def get_far_clip_plane(self, prec=None):
         """Retrieve far clipping plane."""
         if self._handle < 0:
             if self._handle == MISSING_HANDLE:
@@ -578,9 +577,10 @@ class VisionSensor(SceneObject):
                               "".format(self._name))
         if prec is not None:
             clip_plane = round(clip_plane, prec)  # far clipping plane may be
-                                                  # slightly imprecise (about
-                                                  # the 10th digit after the
-                                                  # decimal point)
+                                                  # slightly imprecise due to
+                                                  # the use of single-precision
+                                                  # floating-point format by
+                                                  # V-REP
         return clip_plane
 
     def set_far_clip_plane(self, clip_plane):
@@ -641,7 +641,7 @@ class VisionSensor(SceneObject):
 
         return image
 
-    def get_near_clip_plane(self, prec=VREP_FLOAT_PREC):
+    def get_near_clip_plane(self, prec=None):
         """Retrieve near clipping plane."""
         if self._handle < 0:
             if self._handle == MISSING_HANDLE:
@@ -665,9 +665,10 @@ class VisionSensor(SceneObject):
                               "".format(self._name))
         if prec is not None:
             clip_plane = round(clip_plane, prec)  # near clipping plane may be
-                                                  # slightly imprecise (about
-                                                  # the 10th digit after the
-                                                  # decimal point)
+                                                  # slightly imprecise due to
+                                                  # the use of single-precision
+                                                  # floating-point format by
+                                                  # V-REP
         return clip_plane
 
     def set_near_clip_plane(self, clip_plane):

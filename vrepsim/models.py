@@ -10,8 +10,7 @@ following models:
 
 import vrep
 
-from vrepsim.constants import (MISSING_HANDLE, REMOVED_OBJ_HANDLE,
-                               VREP_FLOAT_PREC)
+from vrepsim.constants import MISSING_HANDLE, REMOVED_OBJ_HANDLE
 from vrepsim.exceptions import ConnectionError, ServerError
 from vrepsim.objects import MotorArray, ProximitySensorArray, SceneObject
 
@@ -22,7 +21,7 @@ class Model(SceneObject):
     def __init__(self, name, parent=None, vrep_sim=None):
         super(Model, self).__init__(name, parent, vrep_sim)
 
-    def get_bbox_limits(self, prec=VREP_FLOAT_PREC):
+    def get_bbox_limits(self, prec=None):
         """Retrieve limits of model bounding box."""
         BBOX_LIMITS = (
             ('x_min', vrep.sim_objfloatparam_modelbbox_min_x),
@@ -54,9 +53,9 @@ class Model(SceneObject):
                 raise ServerError("Could not retrieve {0} limit of {1} "
                                   "bounding box.".format(limit[0], self._name))
             if prec is not None:
-                lim = round(lim, prec)  # limit may be slightly imprecise
-                                        # (about the 6th digit after the
-                                        # decimal point)
+                lim = round(lim, prec)  # limit may be slightly imprecise due
+                                        # to the use of single-precision
+                                        # floating-point format by V-REP
             bbox_limits.append(lim)
         bbox_limits = [[min_lim, max_lim]
                        for min_lim, max_lim

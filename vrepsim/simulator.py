@@ -22,7 +22,6 @@ import time
 
 import vrep
 
-from vrepsim.constants import VREP_FLOAT_PREC
 from vrepsim.exceptions import ConnectionError, ServerError
 
 _vrep_sim = None
@@ -177,7 +176,7 @@ class Simulator(object):
                 print("Could not disconnect from V-REP remote API server: "
                       "not connected.")
 
-    def get_dyn_eng_dt(self, prec=VREP_FLOAT_PREC):
+    def get_dyn_eng_dt(self, prec=None):
         """Retrieve dynamics engine time step."""
         vrep.sim_floatparam_dynamic_step_size = 3  # constant missing in Python
                                                    # binding to V-REP remote
@@ -194,8 +193,10 @@ class Simulator(object):
         if prec is not None:
             dyn_eng_dt = round(dyn_eng_dt, prec)  # dynamics engine time step
                                                   # may be slightly imprecise
-                                                  # (about the 10th digit after
-                                                  # the decimal point)
+                                                  # due to the use of
+                                                  # single-precision
+                                                  # floating-point format in
+                                                  # V-REP
         return dyn_eng_dt
 
     def get_dyn_eng_name(self):
@@ -223,7 +224,7 @@ class Simulator(object):
             raise ServerError("Could not retrieve scene path.")
         return scene_path
 
-    def get_sim_dt(self, prec=VREP_FLOAT_PREC):
+    def get_sim_dt(self, prec=None):
         """Retrieve V-REP simulation time step."""
         if self._client_id is None:
             raise ConnectionError(
@@ -236,8 +237,9 @@ class Simulator(object):
             raise ServerError("Could not retrieve V-REP simulation time step.")
         if prec is not None:
             sim_dt = round(sim_dt, prec)  # V-REP simulation time step may be
-                                          # slightly imprecise (about the 10th
-                                          # digit after the decimal point)
+                                          # slightly imprecise due to the use
+                                          # of single-precision floating-point
+                                          # format in V-REP
         return sim_dt
 
     def get_version(self):
