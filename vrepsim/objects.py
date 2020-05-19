@@ -203,7 +203,7 @@ class SceneObject(Communicator):
                        in zip(bbox_limits[::2], bbox_limits[1::2])]
         return bbox_limits
 
-    def get_orientation(self, relative=None):
+    def get_orientation(self, relative=None, prec=None):
         """Retrieve object orientation specified as Euler angles about x, y,
         and z axes of the reference frame, each angle between -pi and pi.
         """
@@ -227,7 +227,10 @@ class SceneObject(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve orientation of {}.".format(self._name))
-        return orientation
+        if prec is None:
+            return orientation
+        else:
+            return [round(angle, prec) for angle in orientation]
 
     def set_orientation(self, orientation, relative=None, allow_in_sim=False):
         """Set object orientation specified as Euler angles about x, y, and z

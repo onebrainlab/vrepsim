@@ -35,6 +35,8 @@ Changelog
   simulated in V-REP.
 - Added optional argument for retrieving scene object position, which allows
   specifying a precision to which the returned float values should be rounded.
+- Added optional argument for retrieving scene object orientation, which allows
+  specifying a precision to which the returned float values should be rounded.
 
 ### Changed
 
