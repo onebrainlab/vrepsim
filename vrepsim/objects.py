@@ -305,7 +305,7 @@ class SceneObject(Communicator):
             parent.register_child(self)
             self._parent = parent
 
-    def get_position(self, relative=None):
+    def get_position(self, relative=None, prec=None):
         """Retrieve object position."""
         if self._handle < 0:
             if self._handle == MISSING_HANDLE:
@@ -327,7 +327,10 @@ class SceneObject(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve position of {}.".format(self._name))
-        return position
+        if prec is None:
+            return position
+        else:
+            return [round(coord, prec) for coord in position]
 
     def set_position(self, position, relative=None, allow_in_sim=False):
         """Set object position."""

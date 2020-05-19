@@ -33,6 +33,8 @@ Changelog
   sensor simulated in V-REP.
 - Added setting vision sensor far clipping plane via interface to vision sensor
   simulated in V-REP.
+- Added optional argument for retrieving scene object position, which allows
+  specifying a precision to which the returned float values should be rounded.
 
 ### Changed
 
