@@ -493,7 +493,7 @@ class ProximitySensor(SceneObject):
     def __init__(self, name, parent=None, vrep_sim=None):
         super(ProximitySensor, self).__init__(name, parent, vrep_sim)
 
-    def get_distance(self, fast=True):
+    def get_distance(self, fast=True, prec=None):
         """Retrieve distance to the detected point."""
         if self._handle < 0:
             if self._handle == MISSING_HANDLE:
@@ -512,9 +512,10 @@ class ProximitySensor(SceneObject):
         if res == vrep.simx_return_ok:
             if detect:
                 if fast:
-                    return point[2]
+                    distance = point[2]
                 else:
-                    return math.sqrt(sum(coord * coord for coord in point))
+                    distance = math.sqrt(sum(coord * coord for coord in point))
+                return distance if prec is None else round(distance, prec)
             else:
                 return None
         elif res == vrep.simx_return_novalue_flag:
