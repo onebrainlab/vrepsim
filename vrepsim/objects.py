@@ -531,7 +531,7 @@ class VisionSensor(SceneObject):
     def __init__(self, name, parent=None, vrep_sim=None):
         super(VisionSensor, self).__init__(name, parent, vrep_sim)
 
-    def get_depth_buffer(self):
+    def get_depth_buffer(self, prec=None):
         """Retrieve depth buffer."""
         # Retrieve depth buffer from the vision sensor simulated in V-REP
         if self._handle < 0:
@@ -552,6 +552,10 @@ class VisionSensor(SceneObject):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve depth buffer from {}.".format(self._name))
+
+        # If necessary, round depth values
+        if prec is not None:
+            buffer = [round(val, prec) for val in buffer]
 
         # Arrange pixels in rows, reversing from bottom up to top down order
         width, height = resolution
