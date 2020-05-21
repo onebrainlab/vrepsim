@@ -37,6 +37,9 @@ Changelog
   specifying a precision to which the returned float values should be rounded.
 - Added optional argument for retrieving scene object orientation, which allows
   specifying a precision to which the returned float values should be rounded.
+- Added optional argument for retrieving positions of scene objects in a
+  collection, which allows specifying a precision to which the returned float
+  values should be rounded.
 
 ### Changed
 

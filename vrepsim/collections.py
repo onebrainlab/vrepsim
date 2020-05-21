@@ -62,7 +62,7 @@ class Collection(Communicator):
         return [orientations[o*3:(o+1)*3]
                 for o in range(len(orientations) / 3)]
 
-    def get_positions(self):
+    def get_positions(self, prec=None):
         """Retrieve positions of component scene objects."""
         client_id = self.client_id
         if client_id is None:
@@ -74,6 +74,8 @@ class Collection(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve positions of {}.".format(self._name))
+        if prec is not None:
+            positions = [round(coord, prec) for coord in positions]
         return [positions[p*3:(p+1)*3] for p in range(len(positions) / 3)]
 
     def _get_handle(self):
