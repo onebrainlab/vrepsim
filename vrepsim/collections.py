@@ -44,7 +44,7 @@ class Collection(Communicator):
                 "Could not retrieve names of {}.".format(self._name))
         return names
 
-    def get_orientations(self):
+    def get_orientations(self, prec=None):
         """Retrieve orientations of component scene objects, specified as Euler
         angles about x, y, and z axes of the absolute reference frame, each
         angle between -pi and pi.
@@ -59,6 +59,8 @@ class Collection(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError(
                 "Could not retrieve orientations of {}.".format(self._name))
+        if prec is not None:
+            orientations = [round(angle, prec) for angle in orientations]
         return [orientations[o*3:(o+1)*3]
                 for o in range(len(orientations) / 3)]
 
