@@ -30,8 +30,8 @@ _vrep_sim = None
 def get_default_simulator(raise_on_none=False):
     """Retrieve default interface to V-REP remote API server."""
     if _vrep_sim is None and raise_on_none:
-        raise RuntimeError("No interface is currently connected to V-REP "
-                           "remote API server.")
+        raise ConnectionError("No interface is currently connected to V-REP "
+                              "remote API server.")
     return _vrep_sim
 
 
