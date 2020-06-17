@@ -99,7 +99,10 @@ class SceneObject(Communicator):
     @property
     def removed(self):
         """Object removed status."""
-        return self._handle == REMOVED_OBJ_HANDLE
+        if self._handle != MISSING_HANDLE:
+            return self._handle == REMOVED_OBJ_HANDLE
+        else:
+            return None
 
     def call_script_func(self, funcname, script_type='customization',
                          args_int=[], args_float=[], args_string=[],
