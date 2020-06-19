@@ -58,6 +58,8 @@ Changelog
 - Changed handling errors when setting velocities for array of motors.
 - Changed retrieving handle to scene object from various types via interface to
   scene objects simulated in V-REP.
+- Changed retrieving handle to scene object parent via interface to a generic
+  scene object simulated in V-REP.
 - Changed rounding float values returned by V-REP remote API functions.
 
 ### Fixed

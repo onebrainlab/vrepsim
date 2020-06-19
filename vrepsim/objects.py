@@ -283,7 +283,7 @@ class SceneObject(Communicator):
         if res != vrep.simx_return_ok:
             raise ServerError("Could not retrieve handle to the parent of "
                               "{}.".format(self._name))
-        return handle
+        return handle if handle >= 0 else None
 
     def set_parent(self, parent=None, keep_pos=True):
         """Set object parent."""
