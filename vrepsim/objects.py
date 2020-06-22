@@ -285,7 +285,7 @@ class SceneObject(Communicator):
                               "{}.".format(self._name))
         return handle if handle >= 0 else None
 
-    def set_parent(self, parent=None, keep_pos=True):
+    def set_parent(self, parent, keep_pos=True):
         """Set object parent."""
         if self._handle < 0:
             if self._handle == MISSING_HANDLE:
