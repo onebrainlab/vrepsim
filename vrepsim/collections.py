@@ -78,7 +78,7 @@ class Collection(Communicator):
                 "Could not retrieve positions of {}.".format(self._name))
         if prec is not None:
             positions = [round(coord, prec) for coord in positions]
-        return [positions[p*3:(p+1)*3] for p in range(len(positions) / 3)]
+        return [positions[p:p+3] for p in range(0, len(positions), 3)]
 
     def _get_handle(self):
         """Retrieve collection handle."""
