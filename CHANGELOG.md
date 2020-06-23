@@ -62,6 +62,8 @@ Changelog
   scene object simulated in V-REP.
 - Changed argument for setting scene object parent via interface to a generic
   scene object simulated in V-REP.
+- Changed retrieving whether V-REP simulation is started via interface to V-REP
+  remote API server.
 - Changed rounding float values returned by V-REP remote API functions.
 
 ### Fixed

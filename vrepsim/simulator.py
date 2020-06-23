@@ -294,7 +294,7 @@ class Simulator(object):
                               "started.")
 
         # Determine whether V-REP simulation is started
-        return server_state & SIM_NOT_STOPPED
+        return bool(server_state & SIM_NOT_STOPPED)
 
     def load_scene(self, filename, server_side=True):
         """Load scene from file."""
