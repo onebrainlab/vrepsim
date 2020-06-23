@@ -61,8 +61,7 @@ class Collection(Communicator):
                 "Could not retrieve orientations of {}.".format(self._name))
         if prec is not None:
             orientations = [round(angle, prec) for angle in orientations]
-        return [orientations[o*3:(o+1)*3]
-                for o in range(len(orientations) / 3)]
+        return [orientations[o:o+3] for o in range(0, len(orientations), 3)]
 
     def get_positions(self, prec=None):
         """Retrieve positions of component scene objects."""
