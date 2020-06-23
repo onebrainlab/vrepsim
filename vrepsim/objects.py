@@ -561,10 +561,8 @@ class VisionSensor(SceneObject):
 
         # Arrange pixels in rows, reversing from bottom up to top down order
         width, height = resolution
-        buffer = [buffer[p:p+width]
-                  for p in reversed(range(0, width * height, width))]
-
-        return buffer
+        return [buffer[p:p+width]
+                for p in reversed(range(0, width * height, width))]
 
     def get_far_clip_plane(self, prec=None):
         """Retrieve far clipping plane."""
