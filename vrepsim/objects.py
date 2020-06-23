@@ -201,10 +201,9 @@ class SceneObject(Communicator):
                                         # to the use of single-precision
                                         # floating-point format by V-REP
             bbox_limits.append(lim)
-        bbox_limits = [[min_lim, max_lim]
-                       for min_lim, max_lim
-                       in zip(bbox_limits[::2], bbox_limits[1::2])]
-        return bbox_limits
+        return [[min_lim, max_lim]
+                for min_lim, max_lim
+                in zip(bbox_limits[::2], bbox_limits[1::2])]
 
     def get_orientation(self, relative=None, prec=None):
         """Retrieve object orientation specified as Euler angles about x, y,
