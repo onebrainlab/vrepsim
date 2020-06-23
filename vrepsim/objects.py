@@ -648,9 +648,7 @@ class VisionSensor(SceneObject):
             image = [image[p:p+3] for p in range(0, 3*n_pixels, 3)]
 
         # Arrange pixels in rows, reversing from bottom up to top down order
-        image = [image[p:p+width] for p in reversed(range(0, n_pixels, width))]
-
-        return image
+        return [image[p:p+width] for p in reversed(range(0, n_pixels, width))]
 
     def get_near_clip_plane(self, prec=None):
         """Retrieve near clipping plane."""
