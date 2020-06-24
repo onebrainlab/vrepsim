@@ -148,7 +148,7 @@ class Simulator(object):
 
         # If necessary, display confirmation message
         if verbose:
-            print("Successully {0} to V-REP remote API server at "
+            print("Successfully {0} to V-REP remote API server at "
                   "{1}:{2}.".format(conn_msg, self._addr, self._port))
 
     def disconnect(self, verbose=None):
