@@ -18,6 +18,8 @@ Interface to V-REP remote API server provides the following functionality:
 - retrieving dynamics engine time step.
 """
 
+from __future__ import print_function
+
 import time
 
 import vrep
