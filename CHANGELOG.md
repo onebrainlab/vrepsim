@@ -74,6 +74,10 @@ Changelog
 - Fixed removing model from scene via interface to a generic model simulated in
   V-REP.
 
+### Deprecated
+
+- Deprecated support for Python 2.
+
 ### Removed
 
 - Removed retrieving distance to detected point inverted such that smaller

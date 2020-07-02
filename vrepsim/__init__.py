@@ -20,6 +20,12 @@ which V-REP is installed):
 __version__ = '0.4.0.dev1'
 __author__ = "Przemyslaw (Mack) Nowak"
 
+import sys
+import warnings
+
+if sys.version_info[0] == 2:
+    warnings.warn("Support for Python 2 is deprecated.", DeprecationWarning)
+
 from .collections import Collection
 from .models import Model, PioneerBot
 from .objects import (Dummy, Motor, MotorArray, ProximitySensor,
