@@ -2,6 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from distutils.core import setup
+import os
+
+setup_path = os.path.abspath(os.path.dirname(__file__))
+
+
+def read_description(filename):
+    with open(os.path.join(setup_path, filename), 'r') as description_file:
+        return description_file.read()
 
 
 setup(
@@ -10,6 +18,7 @@ setup(
     author="Przemyslaw (Mack) Nowak",
     author_email="pnowak.mack@gmail.com",
     description="High-level Python interface to V-REP simulator",
+    long_description=read_description("README.md"),
     url="https://github.com/macknowak/vrepsim",
     license="GNU General Public License v3 or later (GPLv3+)",
     packages=['vrepsim'],
