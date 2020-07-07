@@ -1,2 +1,5 @@
-*.egg-info
+# Byte-compiled code
 *.py[co]
+
+# Packaged code
+*.egg-info
