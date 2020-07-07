@@ -1,5 +1,24 @@
 # Byte-compiled code
-*.py[co]
+__pycache__/
+*.py[cod]
 
 # Packaged code
-*.egg-info
+build/
+dist/
+.eggs/
+*.egg-info/
+MANIFEST
+
+# IDE configuration
+.idea/
+.ipynb_checkpoints/
+.vscode/
+
+# Editor backup copies
+*~
+*.bak
+*.old
+*.swp
+
+# macOS
+.DS_Store
