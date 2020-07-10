@@ -14,7 +14,7 @@ def read_description(filename):
 
 setup(
     name="vrepsim",
-    version='0.4.0.dev1',
+    version='0.4.0',
     author="Przemyslaw (Mack) Nowak",
     author_email="pnowak.mack@gmail.com",
     description="High-level Python interface to V-REP simulator",
